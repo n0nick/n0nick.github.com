@@ -1,0 +1,155 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Pygame: Planned sprites work - tilde</title>
+	<meta name="author" content="Sagie Maoz">
+
+	
+	<meta name="description" content="As a final step before getting busy with refactoring and reorganizing Pygame&rsquo;s sprite classes, I&rsquo;ve composed the following short paper &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="tilde" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">tilde</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:n0nick.github.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		<a class="twitter" href="http://twitter.com/n0nick" title="Twitter">Twitter</a>
+		
+		
+		<a class="github" href="https://github.com/n0nick" title="GitHub">GitHub</a>
+		
+    
+    <a class="pinboard" href="https://pinboard.in/u:n0nick" title="Pinboard">Pinboard</a>
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:n0nick.github.com">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">Pygame: Planned Sprites Work</h2>
+	<div class="entry-content"><p>As a final step before getting busy with refactoring and reorganizing Pygame&rsquo;s sprite classes, I&rsquo;ve composed the following short paper describing what I want to get done on each 7 new features planned for this part of the project.</p><p>These decisions are based on feedback and suggestions <a href="http://www.mail-archive.com/pygame-users@seul.org/msg16858.html">posted on the discussion list</a> and on the #pygame IRC channel, and also on my private research of other open-source game libraries: <a href="http://www.cocos2d-iphone.org/">cocos2d</a>, <a href="http://www.pyglet.org/">Pyglet</a>, <a href="http://www.eecis.udel.edu/~rdeaton/spyral/">Spyral</a> &amp; <a href="http://www.pygame.org/project-Gloss-1155-.html">Gloss</a>, among others.</p><p>This isn&rsquo;t a finalized spec of course, just my way of listing things I want to take care of, and along the way getting feedback from the community.</p><p>As always, feel free to contact me with any suggestions or comments.</p><hr /><h2>1. Anchor points</h2><p>The <code>Sprite</code> object should have an <code>anchor</code> attribute, that could be set to either:</p><ul><li><code>(x, y)</code> representing an offset</li><li>One of a set of predefined flags i.e. <code>CENTER</code>, <code>MIDBOTTOM</code>, <code>TOPLEFT</code>, that would remain appropriate even after transformations (scaling, rotating, etc).</li></ul><p>The default value would be <code>TOPLEFT</code>.</p><p>The <code>anchor</code> attribute represents a point in the sprite that is used when moving and transforming the sprite.</p><p>So for example, if a sprite&rsquo;s anchor is <code>(10, 20)</code> and we move it to <code>(100, 100)</code> &ndash; then in result the anchor pixel would be positioned in <code>(100, 100)</code> &ndash; meaning in fact, that the sprite&rsquo;s top left coordinates are <code>(90, 80)</code>.</p><h2>2. Better positioning</h2><p>Positioning sprites is currently done by manipulating the sprite&rsquo;s <code>rect</code> attribute.</p><p>It should be possible to position a <code>Sprite</code> object using a tuple <code>(x, y)</code> that would have the same effect.<br />The tuple would be used in accordance with the sprite&rsquo;s anchor point, as defined above.</p><p>The <code>x</code> and <code>y</code> values should be able to be float values, to allow for varying speeds; For example, moving a sprite by 0.1 pixels every frame and then the sprite would move 1 pixel every 10 frames.<br />The actual rendering would use rounded values.</p><h2>3. Visual attributes</h2><p>A sprite should have several attributes that affect its visual representation, and could be changed dynamically during the run of the game.</p><ul><li><strong>Visibility</strong>: A boolean to say whether the sprite should be rendered at all. Default is <code>true</code>.</li><li><strong>Scale</strong>: A float defining the aspect between the sprite&rsquo;s original size and what should appear on screen. Default is <code>1</code>.</li><li><strong>Rotation angle</strong>: A float representing the degree the sprite should be rotated with. The rotation is done around the anchor point. Default is <code>0</code>.</li><li><strong>Crop rectangle</strong>: A <code>rect</code> value with coordinates relative to the original sprite image, defining the part of the image to render. Default is <code>((0, 0), (w, h))</code>, with <code>w</code> and <code>h</code> being the image&rsquo;s width and height values.</li></ul><h2>4. Smarter layers</h2><p>A <code>Sprite</code> object should have a <code>layer</code> attribute, with an integer value representing the layer&rsquo;s z-index.<br />This is actually already done in <code>DirtySprite</code> and <code>LayeredUpdate</code>. We should have it for every sprite.</p><p>Rendering sprites should behave as in <code>LayeredUpdate</code>, maintaining a list of sprites ordered by their z-index.</p><h2>5. Aggregated sprites</h2><p>A new class <code>AggregatedSprite</code> extending <code>Sprite</code> that holds a list of other <code>Sprite</code> objects.</p><p>They are all positioned and rendered regularly on the screen, and the <code>AggregatedSprite</code> instance could be used to manipulate them together:</p><ul><li>Setting the <code>AggregatedSprite</code>&rsquo;s position to <code>(x, y)</code> would use these values as an offset for positioning its sprites.</li><li>Setting a value of one of the visual attributes would use this value to overwrite the same attribute for the sprites.</li></ul><h2>6. Sprite picking</h2><p>The screen should have a method to pick sprites by coordinates &ndash; that is, given a position <code>(x, y)</code> it should return a list of all sprites rendered at this point.</p><ul><li>Optional: Pass a flag to only pick visible sprites (<code>visible = true</code>).</li></ul><h2>7. Automated &ldquo;dirty&rdquo; rendering</h2><p>All of the sprites and sprite groups should have the dirty rendering functionality of <code>DirtySprite</code> and <code>LayeredDirty</code>.</p><p>Sprites should label themselves dirty automatically as soon as either their position, image, or any other visual attribute were changed.<br />This would then cause them to be re-rendered only when necessary.</p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-14T00:00:00+03:00" pubdate data-updated="true">Jun 14<span>th</span>, 2012</time></div>
+	<div class="tags">
+
+</div>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    Sagie Maoz
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-34062149-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+</body>
+</html>
