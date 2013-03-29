@@ -1,0 +1,22 @@
+---
+layout: post
+title: "jQuery stacheComb: Loading a Handlebars.js template into the page"
+tags:
+- client side
+- handlebars.js
+- javascript
+- jquery
+- plugin
+- templates
+- web
+status: publish
+type: post
+published: true
+meta: {}
+---
+<p><a href="http://www.handlebarsjs.com/" target="_blank">Handlebars.js</a>&nbsp;is great.</p>
+<p>It's a superset of the brilliant <a href="http://mustache.github.com/" target="_self">mustache</a>&nbsp;template engine, written especially for Javascript and with client-side in mind, and it provides a very elegant and organized way for using templates on a rich client-side application. If you're looking for a template engine, I highly recommend looking into it.</p>
+<p>I got to know it working on a previous application that I built around the uberkool&nbsp;<a href="http://sammyjs.org/" target="_blank">Sammy.js</a> framework. Among all of its features, Sammy lets you announce you're going to use a template for the main element and it would handle the loading and inserting of template content into the page.</p>
+<p>Now, working on another app that's not using Sammy, I needed to get this specific functionality, with a touch of improved performance;<br />I needed a plugin that, like Sammy, would make an AJAX request for the template file if it doesn't have it loaded yet, but additionaly in the production environment, I could just add these templates to the main markup (i.e. in a build script) and the plugin would use them without another request.</p>
+<p>This was fairly easy but I thought I'd share the result: The jQuery <strong>stacheComb</strong> plugin.</p>
+<p>https://gist.github.com/1176566</p>
