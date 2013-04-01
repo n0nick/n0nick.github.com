@@ -48,14 +48,12 @@ doing?
 
 Thanks.
 
-I was reading [this
-post](http://blog.stefandeboey.be/copy-bookmarks-from-read-it-later-to-instapap)
-by a guy named Stefan a few minutes ago.  
+I was reading [this post] by a guy named Stefan a few minutes ago.  
  I clicked 'like' and Posterous asked me to log in. I did, it took me
 more than a minute because I forgot the password for my old account, and
 then I got to a page with this message:
 
-![](http://getfile4.posterous.com/getfile/files.posterous.com/temp-2011-08-12/lGtoqCIEBuEcJtEGwoqwobIhhfuxDhwjpxiAmqBdkJbCwrnxgChAqqeelyfv/Screen_shot_2011-08-12_at_11.57.28_AM.png.thumb100.png?content_part=saGcbJdEDhxpvkcIFuAw)
+![](http://s7.postimg.org/6kc6dyd4r/Screen_shot_2011_08_12_at_11_57_28_AM_png_scaled.png)
 
  
 
@@ -65,3 +63,5 @@ world.
 
 So, kudos to Posterous.  
 A good time to try my years-old "tech blog" idea.
+
+[this post]: http://blog.stefandeboey.be/copy-bookmarks-from-read-it-later-to-instapap
