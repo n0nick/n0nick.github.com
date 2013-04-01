@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>GSoC Journal: Weeks 1-2 - .n0nickrc</title>
+  <title>Log in, continue - .n0nickrc</title>
   <meta name="author" content="Sagie Maoz">
 
   
-  <meta name="description" content="With the first 2 weeks of the GSoC coding period over, I thought I&#8217;d post about what I&#8217;ve been up to so far. The start of the coding &hellip;">
+  <meta name="description" content="Log in sucks. I hate logging in to stuff. On my own devices, I always tick &#8216;Remember me&#8217;. I never log out. Why
+should I? The reasons for &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://n0nick.github.com/blog/2012/06/04/gsoc-journal-weeks-1-2/">
+  <link rel="canonical" href="http://n0nick.github.com/blog/2011/08/12/log-in-continue/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
    <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
@@ -78,7 +79,7 @@
   
   <header>
     
-      <h1 class="entry-title">GSoC Journal: Weeks 1-2</h1>
+      <h1 class="entry-title">Log in, Continue</h1>
     
     
       <p class="meta">
@@ -94,81 +95,63 @@
   
 
 
-<time datetime="2012-06-04T00:00:00+03:00" pubdate data-updated="true">Jun 4<span>th</span>, 2012</time>
+<time datetime="2011-08-12T00:00:00+03:00" pubdate data-updated="true">Aug 12<span>th</span>, 2011</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>With the first 2 weeks of the GSoC coding period over, I thought I&#8217;d post about what I&#8217;ve been up to so far.</p>
+<div class="entry-content"><p><strong>Log in sucks.</strong></p>
 
-<p>The start of the coding period took me by surprise. I had to learn about it from a post in the <a href="http://google-opensource.blogspot.com/">Google Open Source blog</a>.<br/>
-I had to re-adjust and flex my schedule to get into working mode, and that wasn&#8217;t too easy. That&#8217;s why I&#8217;m a bit late with my progress, compared with the timeline I described in <a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002">my application</a>. Nothing that I won&#8217;t be able to fix later on, though :)</p>
+<p>I hate logging in to stuff.</p>
 
-<p>So in the past 2 weeks I was able to:</p>
+<p>On my own devices, I always tick &#8216;Remember me&#8217;. I never log out. Why
+should I?</p>
 
-<ul>
-<li>Read through some of the <a href="https://bitbucket.org/pygame/pygame/src">Pygame source</a>, study the basics that get it going.</li>
-<li>Specifically read through <a href="http://www.pygame.org/docs/ref/sprite.html">sprite.py</a> to understand the current state of the sprites system.</li>
-<li>Set up my development environment so that it actually runs the framework and tests successfully.</li>
-<li>Read through most of <a href="http://inventwithpython.com/makinggames.pdf">Making Games with Python &amp; Pygame</a>, going over the examples code.</li>
-<li>Checked out a few of the <a href="http://www.pygame.org/docs/ref/examples.html">example games</a>, playing around with their source code.</li>
-<li>Studied the <code>DirtySprite</code> and <code>LayeredDirty</code> classes and their use case.</li>
-<li>Wrote a <a href="http://dotfile.n0nick.net/quick-dirty-using-pygames-dirtysprite-layered">DirtySprite and LayeredDirty tutorial</a>. This was <em>extremely</em> helpful in learning to use the feature. Great idea from mentor illume.</li>
-<li>Sent a <a href="http://www.mail-archive.com/pygame-users@seul.org/msg16858.html">Call for Suggestions</a> to the mailing list regarding my planned features list for the sprite classes. Got tons of helpful feedback from the community.</li>
-</ul>
+<p>The reasons for logging in are all understandable.<br/>
+ It&#8217;s a solution for many problems.<br/>
+But it&#8217;s a bad solution. <em>Passwords</em> are for safes in banks and
+<em>usernames</em> are just nothings.</p>
 
+<p>When I try to do something and the machine stops me and shouts at me
+<em>Error! You are not logged in! Your authentication failed! You do not
+have permissions for this task!</em>, I feel stupid.<br/>
+ And machines are not supposed to make me feel stupid.</p>
 
-<p>The last step helped me compose the following first draft of a sprites system features list:</p>
+<p>And what more, <strong>logging in absolutely breaks the user experience</strong>.<br/>
+ I get to a blog, I read a post, I read the comments, I like the post, I
+want to let the author know, I click &#8220;like&#8221;.<br/>
+ I get an ERROR MESSAGE. <em>You need to be logged in to do that</em>. Argh.<br/>
+I log in, or sign up, or &#8216;forget my password&#8217; (blerg) and then it takes
+me to the site&#8217;s homepage.<br/>
+ I&#8230; wait, homepage? I didn&#8217;t ask to be on the damn homepage.<br/>
+ I&#8217;ll try to find that post I was reading. I&#8217;ll try the &#8220;Back&#8221; button
+but it&#8217;d fail because of the POST call. I&#8217;ll give up. I&#8217;ll leave.<br/>
+ Are you happy, website?</p>
 
-<ol>
-<li>Better positioning, using float values.</li>
-<li><em>Anchor points</em>.</li>
-<li>Visual Attributes:
+<p>Logging in and maintaining an <em>account</em> is an experience bug that should
+be fixed.<br/>
+But in the meantime, would websites redirect me back to what I was
+doing?</p>
 
-<ul>
-<li>Rotation angle</li>
-<li>Scale</li>
-<li>Crop rectangle</li>
-<li>Visibility</li>
-</ul>
-</li>
-<li><em>Smarter layers system</em>.</li>
-<li><em>Aggregated sprites</em>.</li>
-<li><em>Sprite picking</em>.</li>
-<li>Automated &#8220;dirty&#8221; rendering.</li>
-<li>Encapsulating the Collision Detection code.</li>
-<li>Optional: Animation? Events?</li>
-</ol>
+<p>Thanks.</p>
 
+<p>I was reading <a href="http://blog.stefandeboey.be/copy-bookmarks-from-read-it-later-to-instapap">this post</a> by a guy named Stefan a few minutes ago.<br/>
+ I clicked &#8216;like&#8217; and Posterous asked me to log in. I did, it took me
+more than a minute because I forgot the password for my old account, and
+then I got to a page with this message:</p>
 
-<p>Again, this is just a first draft and all of the items are still in discussion and under consideration. <br/>
-If anybody that&#8217;s reading this here has any ideas for new features or notes on any of the items here, please feel free to write to me, either here, in the mailing list or via email.</p>
+<p><img src="http://s7.postimg.org/6kc6dyd4r/Screen_shot_2011_08_12_at_11_57_28_AM_png_scaled.png" alt="" /></p>
 
-<h3>What&#8217;s next?</h3>
+<p> </p>
 
-<p>As a lesson from last year&#8217;s GSoC, that I also had to start while a semester was still going, I decided on a little system: <br/>
-Every weekend, after summing up what I&#8217;ve been up to so far (i.e., this post) - I will decide on tasks for the next week in a specific format: A list of 4-5 minor tasks and one major task. <br/>
-This way, I&#8217;ll be able to finish the small tasks during the week, when I get back home from school or work. The large task would be done during the weekend.</p>
+<p>A perfectly normal turn of events!<br/>
+But &#8216;normal&#8217; is such an outstanding word in the web user experience
+world.</p>
 
-<p>So, this week I&#8217;ll:</p>
-
-<ol>
-<li><del>Blog about the 2 weeks and what&#8217;s next.</del></li>
-<li>Research some of the features from the list (italic above; items 2, 4, 5, 6);
-
-<ul>
-<li>What exactly is required?</li>
-<li>How is it done in other libraries?</li>
-<li>How should we do it?</li>
-</ul>
-</li>
-<li>Weekend task: Start writing a paper defining the sprite project work, describing the features that would be implemented.</li>
-</ol>
-
-
-<p>Have a nice week!</p>
+<p>So, kudos to Posterous.<br/>
+A good time to try my years-old &#8220;tech blog&#8221; idea.</p>
 </div>
 
 
@@ -191,7 +174,7 @@ This way, I&#8217;ll be able to finish the small tasks during the week, when I g
   
 
 
-<time datetime="2012-06-04T00:00:00+03:00" pubdate data-updated="true">Jun 4<span>th</span>, 2012</time>
+<time datetime="2011-08-12T00:00:00+03:00" pubdate data-updated="true">Aug 12<span>th</span>, 2011</time>
       
 
 
@@ -199,7 +182,7 @@ This way, I&#8217;ll be able to finish the small tasks during the week, when I g
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://n0nick.github.com/blog/2012/06/04/gsoc-journal-weeks-1-2/" data-via="n0nick" data-counturl="http://n0nick.github.com/blog/2012/06/04/gsoc-journal-weeks-1-2/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://n0nick.github.com/blog/2011/08/12/log-in-continue/" data-via="n0nick" data-counturl="http://n0nick.github.com/blog/2011/08/12/log-in-continue/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -212,10 +195,10 @@ This way, I&#8217;ll be able to finish the small tasks during the week, when I g
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/06/03/quick-dirty-using-pygames-dirtysprite-layered/" title="Previous Post: Quick & Dirty: Using Pygame's DirtySprite & LayeredDirty (A tutorial)">&laquo; Quick & Dirty: Using Pygame's DirtySprite & LayeredDirty (A tutorial)</a>
+        <a class="basic-alignment left" href="/blog/2011/08/12/hello/" title="Previous Post: Hello">&laquo; Hello</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/06/14/pygame-planned-sprites-work/" title="Next Post: Pygame: Planned sprites work">Pygame: Planned sprites work &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/08/28/jquery-stachecomb-loading-a-handlebars-js-template-into-the-page/" title="Next Post: jQuery stacheComb: Loading a Handlebars.js template into the page">jQuery stacheComb: Loading a Handlebars.js template into the page &raquo;</a>
       
     </p>
   </footer>

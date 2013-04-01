@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[tilde]]></title>
+  <title><![CDATA[.n0nickrc]]></title>
   <link href="http://n0nick.github.com/atom.xml" rel="self"/>
   <link href="http://n0nick.github.com/"/>
-  <updated>2013-03-24T12:26:14+02:00</updated>
+  <updated>2013-04-01T16:33:05+03:00</updated>
   <id>http://n0nick.github.com/</id>
   <author>
     <name><![CDATA[Sagie Maoz]]></name>
@@ -18,7 +18,99 @@
     <link href="http://n0nick.github.com/blog/2012/07/11/its-midterms-time-already/"/>
     <updated>2012-07-11T00:00:00+03:00</updated>
     <id>http://n0nick.github.com/blog/2012/07/11/its-midterms-time-already</id>
-    <content type="html"><![CDATA[<p>I&rsquo;ve been very busy in the past couple of months. It&rsquo;s been very educating, very productive &ndash; yet the time flew way too quickly!</p><p>Outside of <a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002">my GSoC Pygame project</a>, I have been finishing the semester and stepping into a final tests period which proves to be the hardest yet. I don&rsquo;t remember ever being so exhausted day after day when I get home.</p><p>This is the main reason I have to admit that my project doesn&rsquo;t quiet meet the plans to have most of the new Sprite class ready for the midterm evaluations.</p><p>Still, I have some good progress to show for, plus I&rsquo;m fairly sure that after these hectic finals will pass, I will be able to catch up with my plans.</p><h2>Let&rsquo;s show off, then.</h2><p>The <a href="http://dotfile.n0nick.net/pygame-planned-sprites-work">sprites work plan</a> consisted of adding 7 new features to Pygame&rsquo;s <a href="https://github.com/n0nick/pygame-sprites/blob/master/sprite.py">Sprite class</a>.<br />I wrote about implementing 2 of these (<em>Anchor points</em> and <em>Better positioning</em>) in my last post, <a href="http://dotfile.n0nick.net/baby-steps-with-pygame-sprites-anchors-and-po">Baby steps with Pygame sprites</a>.</p><p>Since then, I have finished implementing 2 more, <em>Visual attributes</em> and <em>Aggregated Sprite</em>, which I&rsquo;ll describe below, and also wrote most of the underlying code needed for the rest of the features.</p><p>You can check out my work in progress, including everything described here, in the <a href="https://github.com/n0nick/pygame-sprites"><code>pygame-sprites</code></a> GitHub repository.</p><h3>New visual attributes</h3><p>My <code>Sprite</code> class now has several few new properties: <code>visibility</code>, <code>scale</code> and <code>rotate</code>, which control the way the sprite&rsquo;s image is drawn on the screen:</p><ul><li><code>visibility</code> decides whether the image should be rendered  or not. Default is <code>true</code>.</li><li><code>scale</code> is a float value determining the ratio between the size of the originally supplied image and the required size on the screen. Default is <code>1</code>.</li><li><code>rotate</code> is an integer defining the degree by which to rotate the original image. Default is <code>0</code>.</li></ul><p><img src="http://cl.ly/26103X3c3k3E12323b0j/Screen%20Shot%202012-07-11%20at%2011.25.45%20PM.png" alt="image" /><img src="http://cl.ly/1s0X0t3b0o2j15023e0y/Screen%20Shot%202012-07-11%20at%2011.25.49%20PM.png" alt="image" /><img src="http://cl.ly/1A3N0N0I1g341N1n0p1r/Screen%20Shot%202012-07-11%20at%2011.25.57%20PM.png" alt="image" /></p><p>To implement these attributes I used Python&rsquo;s <a href="http://docs.python.org/library/functions.html#property"><code>property</code> notation</a>, which allows me to set custom getters and setters for standard class properties.<br />In addition to the visual attributes, the sprite&rsquo;s <code>image</code> attribute also uses the new notation, so that its custom getter function would return the transformed image, if a transformation is needed.</p><p>The visual transformations are done using <a href="http://www.pygame.org/docs/ref/transform.html"><code>Pygame.transform</code></a>&rsquo;s methods.</p><h3>Sprites drawing themselves</h3><p>In order to support features such as the <code>visibility</code> attribute, automatic dirty rendering and others, I changed the way we actually draw the sprites, implementing the <a href="http://en.wikipedia.org/wiki/Composite_pattern">composite pattern</a>.<br /><code>Sprite</code>&rsquo;s new method <code>draw</code> gets a surface as an argument and is responsible to draw the current sprite onto it.</p><p><code>Group</code>&rsquo;s old <code>draw</code> method now uses the group&rsquo;s sprites&#8217; <code>draw</code> method if it&rsquo;s available. Legacy code is still supported by preserving the old functionality if no <code>draw</code> method is found.</p><h3>Aggregated sprites</h3><p>I wrote a new class, <code>AggregatedSprite</code>, which extends my <code>Sprite</code> class and adds the functionality of holding a list of child sprites and propagating any change to them.<br />In a sense, an aggregated sprite is something between a sprite and a sprites group.</p><p>The <code>AggregatedSprite</code> class has a <code>sprites</code> property which holds the list of child sprites. This is a basic Python list which could be modified normally.<br />Its <code>draw</code> method calls all of the child sprites&#8217; <code>draw</code>, like a group.</p><p>Setting a value to a visual attribute of an aggregated sprite would propagate this value down to all the child sprites.<br />This was done in <code>Sprite</code> by wrapping the visual attributes&#8217; setters with a method that would call an <code>on_visual_set</code> callback if one exists.<br /><code>AggregatedSprite</code> uses this callback to set the make the same attribute change to all the child sprites.</p><p>Setting an aggregated sprite&rsquo;s <code>position</code> to <code>(x, y)</code> would use these values as offsets for all of the child sprites, that is, move them all from their original position by <code>(x, y)</code>.</p><p><img src="http://cl.ly/2G0b352Q3Q1Q08020w1u/Screen%20Shot%202012-07-11%20at%2011.28.07%20PM.png" alt="image" /><img src="http://cl.ly/2p2B0M0N3u1F1M3E2W0N/Screen%20Shot%202012-07-11%20at%2011.28.15%20PM.png" alt="image" /><img src="http://cl.ly/2s3k1j3M1j2o2d2t3521/Screen%20Shot%202012-07-11%20at%2011.28.26%20PM.png" alt="image" /></p><h3>Still missing</h3><p>I&rsquo;m still missing 3 features here: <em>Automatic dirty rendering</em>, <em>Sprite picking</em> and <em>Smarter layers</em>.</p><p>The move to composite drawing of sprites holds most of the major changes needed for dirty rendering and layered groups, and so there&rsquo;s little work left for these two to be done as well.</p><p>I still have to do some research on implementing <em>Sprite picking</em>, but I&rsquo;m sure it will be pretty simple to do.</p><p>Also, <strong>tests</strong>.<br />Early on, I saw that going full <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> is slowing me down, and I wanted to get stuff working as soon as possible. So I ditched writing tests until everything is more stable.<br />On of my most important tasks once I&rsquo;m done with my last final would be to write tests for all of my changes.<br />This is a big task, but hopefully I could make use code of the demo games I wrote for each feature.</p><p>Some other <strong>TODOs</strong>:</p><ol><li>Anchor points: Use Rect&rsquo;s anchor constants instead of my own.</li><li>Anchor points: Handle negative values.</li><li>Positions: Handle float values.</li><li>Visual attributes: Add <em>crop rectangle</em> attribute.</li><li>Some code cleanup, and way more documentation.</li></ol><h2>That&rsquo;s about it.</h2><p>I can&rsquo;t wait until I&rsquo;m done with my finals so that I can take this project to the next level (and the one after that, too).</p><p>Oh, one more TODO note to self: Blog about the project more. It helps.</p><p>As always, feel free to contact me with any question or idea, either here, by email or on #pygame in Freenode.</p>
+    <content type="html"><![CDATA[<p>I&#8217;ve been very busy in the past couple of months. It&#8217;s been very educating, very productive - yet the time flew way too quickly!</p>
+
+<p>Outside of <a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002">my GSoC Pygame project</a>, I have been finishing the semester and stepping into a final tests period which proves to be the hardest yet. I don&#8217;t remember ever being so exhausted day after day when I get home.</p>
+
+<p>This is the main reason I have to admit that my project doesn&#8217;t quiet meet the plans to have most of the new Sprite class ready for the midterm evaluations.</p>
+
+<p>Still, I have some good progress to show for, plus I&#8217;m fairly sure that after these hectic finals will pass, I will be able to catch up with my plans.</p>
+
+<h2>Let&#8217;s show off, then.</h2>
+
+<p>The <a href="http://dotfile.n0nick.net/pygame-planned-sprites-work">sprites work plan</a> consisted of adding 7 new features to Pygame&#8217;s <a href="https://github.com/n0nick/pygame-sprites/blob/master/sprite.py">Sprite class</a>.<br/>
+I wrote about implementing 2 of these (<em>Anchor points</em> and <em>Better positioning</em>) in my last post, <a href="http://dotfile.n0nick.net/baby-steps-with-pygame-sprites-anchors-and-po">Baby steps with Pygame sprites</a>.</p>
+
+<p>Since then, I have finished implementing 2 more, <em>Visual attributes</em> and <em>Aggregated Sprite</em>, which I&#8217;ll describe below, and also wrote most of the underlying code needed for the rest of the features.</p>
+
+<p>You can check out my work in progress, including everything described here, in the <a href="https://github.com/n0nick/pygame-sprites"><code>pygame-sprites</code></a> GitHub repository.</p>
+
+<h3>New visual attributes</h3>
+
+<p>My <code>Sprite</code> class now has several few new properties: <code>visibility</code>, <code>scale</code> and <code>rotate</code>, which control the way the sprite&#8217;s image is drawn on the screen:</p>
+
+<ul>
+<li><code>visibility</code> decides whether the image should be rendered  or not. Default is <code>true</code>.</li>
+<li><code>scale</code> is a float value determining the ratio between the size of the originally supplied image and the required size on the screen. Default is <code>1</code>.</li>
+<li><code>rotate</code> is an integer defining the degree by which to rotate the original image. Default is <code>0</code>.</li>
+</ul>
+
+
+<p><img src="http://cl.ly/26103X3c3k3E12323b0j/Screen%20Shot%202012-07-11%20at%2011.25.45%20PM.png" alt="image" />
+<img src="http://cl.ly/1s0X0t3b0o2j15023e0y/Screen%20Shot%202012-07-11%20at%2011.25.49%20PM.png" alt="image" />
+<img src="http://cl.ly/1A3N0N0I1g341N1n0p1r/Screen%20Shot%202012-07-11%20at%2011.25.57%20PM.png" alt="image" /></p>
+
+<p>To implement these attributes I used Python&#8217;s <a href="http://docs.python.org/library/functions.html#property"><code>property</code> notation</a>, which allows me to set custom getters and setters for standard class properties.<br/>
+In addition to the visual attributes, the sprite&#8217;s <code>image</code> attribute also uses the new notation, so that its custom getter function would return the transformed image, if a transformation is needed.</p>
+
+<p>The visual transformations are done using <a href="http://www.pygame.org/docs/ref/transform.html"><code>Pygame.transform</code></a>&#8217;s methods.</p>
+
+<h3>Sprites drawing themselves</h3>
+
+<p>In order to support features such as the <code>visibility</code> attribute, automatic dirty rendering and others, I changed the way we actually draw the sprites, implementing the <a href="http://en.wikipedia.org/wiki/Composite_pattern">composite pattern</a>.<br/>
+<code>Sprite</code>&#8217;s new method <code>draw</code> gets a surface as an argument and is responsible to draw the current sprite onto it.</p>
+
+<p><code>Group</code>&#8217;s old <code>draw</code> method now uses the group&#8217;s sprites&#8217; <code>draw</code> method if it&#8217;s available. Legacy code is still supported by preserving the old functionality if no <code>draw</code> method is found.</p>
+
+<h3>Aggregated sprites</h3>
+
+<p>I wrote a new class, <code>AggregatedSprite</code>, which extends my <code>Sprite</code> class and adds the functionality of holding a list of child sprites and propagating any change to them.<br/>
+In a sense, an aggregated sprite is something between a sprite and a sprites group.</p>
+
+<p>The <code>AggregatedSprite</code> class has a <code>sprites</code> property which holds the list of child sprites. This is a basic Python list which could be modified normally.<br/>
+Its <code>draw</code> method calls all of the child sprites&#8217; <code>draw</code>, like a group.</p>
+
+<p>Setting a value to a visual attribute of an aggregated sprite would propagate this value down to all the child sprites.<br/>
+This was done in <code>Sprite</code> by wrapping the visual attributes&#8217; setters with a method that would call an <code>on_visual_set</code> callback if one exists.<br/>
+<code>AggregatedSprite</code> uses this callback to set the make the same attribute change to all the child sprites.</p>
+
+<p>Setting an aggregated sprite&#8217;s <code>position</code> to <code>(x, y)</code> would use these values as offsets for all of the child sprites, that is, move them all from their original position by <code>(x, y)</code>.</p>
+
+<p><img src="http://cl.ly/2G0b352Q3Q1Q08020w1u/Screen%20Shot%202012-07-11%20at%2011.28.07%20PM.png" alt="image" />
+<img src="http://cl.ly/2p2B0M0N3u1F1M3E2W0N/Screen%20Shot%202012-07-11%20at%2011.28.15%20PM.png" alt="image" />
+<img src="http://cl.ly/2s3k1j3M1j2o2d2t3521/Screen%20Shot%202012-07-11%20at%2011.28.26%20PM.png" alt="image" /></p>
+
+<h3>Still missing</h3>
+
+<p>I&#8217;m still missing 3 features here: <em>Automatic dirty rendering</em>, <em>Sprite picking</em> and <em>Smarter layers</em>.</p>
+
+<p>The move to composite drawing of sprites holds most of the major changes needed for dirty rendering and layered groups, and so there&#8217;s little work left for these two to be done as well.</p>
+
+<p>I still have to do some research on implementing <em>Sprite picking</em>, but I&#8217;m sure it will be pretty simple to do.</p>
+
+<p>Also, <strong>tests</strong>.<br/>
+Early on, I saw that going full <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> is slowing me down, and I wanted to get stuff working as soon as possible. So I ditched writing tests until everything is more stable.<br/>
+On of my most important tasks once I&#8217;m done with my last final would be to write tests for all of my changes.<br/>
+This is a big task, but hopefully I could make use code of the demo games I wrote for each feature.</p>
+
+<p>Some other <strong>TODOs</strong>:</p>
+
+<ol>
+<li>Anchor points: Use Rect&#8217;s anchor constants instead of my own.</li>
+<li>Anchor points: Handle negative values.</li>
+<li>Positions: Handle float values.</li>
+<li>Visual attributes: Add <em>crop rectangle</em> attribute.</li>
+<li>Some code cleanup, and way more documentation.</li>
+</ol>
+
+
+<h2>That&#8217;s about it.</h2>
+
+<p>I can&#8217;t wait until I&#8217;m done with my finals so that I can take this project to the next level (and the one after that, too).</p>
+
+<p>Oh, one more TODO note to self: Blog about the project more. It helps.</p>
+
+<p>As always, feel free to contact me with any question or idea, either here, by email or on #pygame in Freenode.</p>
 ]]></content>
   </entry>
   
@@ -27,7 +119,43 @@
     <link href="http://n0nick.github.com/blog/2012/06/24/baby-steps-with-pygame-sprites-anchors-and-po/"/>
     <updated>2012-06-24T00:00:00+03:00</updated>
     <id>http://n0nick.github.com/blog/2012/06/24/baby-steps-with-pygame-sprites-anchors-and-po</id>
-    <content type="html"><![CDATA[<p>It has been pretty difficult getting things done in the past week or so, for various reasons (excuses include my birthday, the start of the finals period and some pressure at work).</p><p>Initially I was trying at doing unit tests for my <a href="http://dotfile.n0nick.net/pygame-planned-sprites-work">planned sprites work</a>, in the <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> tradition. This proved to be a major creativity block for me, I&rsquo;m guessing mostly because I&rsquo;m not too experienced with writing tests.<br />So eventually, I decided to take another approach and just get stuff done in a way that could be quickly presented and tweaked.</p><p>Today, I managed to get 2 of the planned features ready to be played around with: <em>Anchor points</em> and <em>Better positioning</em>.  In addition, I have a simple demo app that showcases the use of these 2 features.</p><p><a href="https://github.com/n0nick/pygame-sprites/blob/master/sprite.py">The new <code>Sprite</code> class</a> is based on a flat-out copy-paste of the original Pygame <code>Sprite</code> class, along with the relevant additions:</p><ul><li>An <code>anchor</code> property that will be used for positioning and modifying the sprite. It can be set at any point during the game to either:<ul><li><code>ANCHOR_TOPLEFT</code></li><li><code>ANCHOR_TOPRIGHT</code></li><li><code>ANCHOR_BOTTOMLEFT</code></li><li><code>ANCHOR_BOTTOMRIGHT</code></li><li>A custom <code>(x, y)</code> tuple relative to the sprite&rsquo;s rectangle coordinates.</li></ul></li><li>An <code>anchor_value</code> method that returns a tuple of the calculated value of the sprite&rsquo;s anchor at a given moment.</li><li>A <code>position</code> proprety consisting of <code>(x, y)</code> coordinates that, when set, uses the sprite&rsquo;s anchor property to position the sprite on the screen.</li></ul><p>The usage of the new features is demonstrated in <a href="https://github.com/n0nick/pygame-sprites/blob/master/demos/regions.py">the <code>regions.py</code> demo</a>.<br />The demo starts out with a basic grid in which you can move a basketball sprite around with the arrow keys:<img src="http://f.cl.ly/items/3V3l1a3i381o2f160W2S/Screen%20Shot%202012-06-23%20at%2011.51.01%20PM.png" alt="Demo with TOPLEFT anchor" />During the game, you can use the <code>a</code>, <code>s</code>, <code>d</code> keys to switch between <code>TOPLEFT</code>, <code>CENTER</code> and <code>(25, 20)</code> settings for the anchor, respectively.<img src="http://f.cl.ly/items/2l1N2j1a3S2p1A2I3Y2T/Screen%20Shot%202012-06-23%20at%2011.51.20%20PM.png" alt="Demo with CENTER anchor" /></p><p>This is basically it, for now, but I&rsquo;m pretty satisfied with this small development, as it was integreated easily enough and shouldn&rsquo;t be breaking any legacy uses of the Pygame&rsquo;s <code>Sprite</code> classes.</p><p>The work is maintained in <a href="https://github.com/n0nick/pygame-sprites/">the <code>pygame-sprites</code> repository</a>.<br />Please feel free to check out the code and the demo app and send any relevant feedback my way.</p><p>I hope to be able to show further progress by the next weekend.</p>
+    <content type="html"><![CDATA[<p>It has been pretty difficult getting things done in the past week or so, for various reasons (excuses include my birthday, the start of the finals period and some pressure at work).</p>
+
+<p>Initially I was trying at doing unit tests for my <a href="http://dotfile.n0nick.net/pygame-planned-sprites-work">planned sprites work</a>, in the <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> tradition. This proved to be a major creativity block for me, I&#8217;m guessing mostly because I&#8217;m not too experienced with writing tests.<br/>
+So eventually, I decided to take another approach and just get stuff done in a way that could be quickly presented and tweaked.</p>
+
+<p>Today, I managed to get 2 of the planned features ready to be played around with: <em>Anchor points</em> and <em>Better positioning</em>.  In addition, I have a simple demo app that showcases the use of these 2 features.</p>
+
+<p><a href="https://github.com/n0nick/pygame-sprites/blob/master/sprite.py">The new <code>Sprite</code> class</a> is based on a flat-out copy-paste of the original Pygame <code>Sprite</code> class, along with the relevant additions:</p>
+
+<ul>
+<li>An <code>anchor</code> property that will be used for positioning and modifying the sprite. It can be set at any point during the game to either:
+
+<ul>
+<li><code>ANCHOR_TOPLEFT</code></li>
+<li><code>ANCHOR_TOPRIGHT</code></li>
+<li><code>ANCHOR_BOTTOMLEFT</code></li>
+<li><code>ANCHOR_BOTTOMRIGHT</code></li>
+<li>A custom <code>(x, y)</code> tuple relative to the sprite&#8217;s rectangle coordinates.</li>
+</ul>
+</li>
+<li>An <code>anchor_value</code> method that returns a tuple of the calculated value of the sprite&#8217;s anchor at a given moment.</li>
+<li>A <code>position</code> proprety consisting of <code>(x, y)</code> coordinates that, when set, uses the sprite&#8217;s anchor property to position the sprite on the screen.</li>
+</ul>
+
+
+<p>The usage of the new features is demonstrated in <a href="https://github.com/n0nick/pygame-sprites/blob/master/demos/regions.py">the <code>regions.py</code> demo</a>.<br/>
+The demo starts out with a basic grid in which you can move a basketball sprite around with the arrow keys:
+<img src="http://f.cl.ly/items/3V3l1a3i381o2f160W2S/Screen%20Shot%202012-06-23%20at%2011.51.01%20PM.png" alt="Demo with TOPLEFT anchor" />
+During the game, you can use the <code>a</code>, <code>s</code>, <code>d</code> keys to switch between <code>TOPLEFT</code>, <code>CENTER</code> and <code>(25, 20)</code> settings for the anchor, respectively.
+<img src="http://f.cl.ly/items/2l1N2j1a3S2p1A2I3Y2T/Screen%20Shot%202012-06-23%20at%2011.51.20%20PM.png" alt="Demo with CENTER anchor" /></p>
+
+<p>This is basically it, for now, but I&#8217;m pretty satisfied with this small development, as it was integreated easily enough and shouldn&#8217;t be breaking any legacy uses of the Pygame&#8217;s <code>Sprite</code> classes.</p>
+
+<p>The work is maintained in <a href="https://github.com/n0nick/pygame-sprites/">the <code>pygame-sprites</code> repository</a>.<br/>
+Please feel free to check out the code and the demo app and send any relevant feedback my way.</p>
+
+<p>I hope to be able to show further progress by the next weekend.</p>
 ]]></content>
   </entry>
   
@@ -36,7 +164,88 @@
     <link href="http://n0nick.github.com/blog/2012/06/14/pygame-planned-sprites-work/"/>
     <updated>2012-06-14T00:00:00+03:00</updated>
     <id>http://n0nick.github.com/blog/2012/06/14/pygame-planned-sprites-work</id>
-    <content type="html"><![CDATA[<p>As a final step before getting busy with refactoring and reorganizing Pygame&rsquo;s sprite classes, I&rsquo;ve composed the following short paper describing what I want to get done on each 7 new features planned for this part of the project.</p><p>These decisions are based on feedback and suggestions <a href="http://www.mail-archive.com/pygame-users@seul.org/msg16858.html">posted on the discussion list</a> and on the #pygame IRC channel, and also on my private research of other open-source game libraries: <a href="http://www.cocos2d-iphone.org/">cocos2d</a>, <a href="http://www.pyglet.org/">Pyglet</a>, <a href="http://www.eecis.udel.edu/~rdeaton/spyral/">Spyral</a> &amp; <a href="http://www.pygame.org/project-Gloss-1155-.html">Gloss</a>, among others.</p><p>This isn&rsquo;t a finalized spec of course, just my way of listing things I want to take care of, and along the way getting feedback from the community.</p><p>As always, feel free to contact me with any suggestions or comments.</p><hr /><h2>1. Anchor points</h2><p>The <code>Sprite</code> object should have an <code>anchor</code> attribute, that could be set to either:</p><ul><li><code>(x, y)</code> representing an offset</li><li>One of a set of predefined flags i.e. <code>CENTER</code>, <code>MIDBOTTOM</code>, <code>TOPLEFT</code>, that would remain appropriate even after transformations (scaling, rotating, etc).</li></ul><p>The default value would be <code>TOPLEFT</code>.</p><p>The <code>anchor</code> attribute represents a point in the sprite that is used when moving and transforming the sprite.</p><p>So for example, if a sprite&rsquo;s anchor is <code>(10, 20)</code> and we move it to <code>(100, 100)</code> &ndash; then in result the anchor pixel would be positioned in <code>(100, 100)</code> &ndash; meaning in fact, that the sprite&rsquo;s top left coordinates are <code>(90, 80)</code>.</p><h2>2. Better positioning</h2><p>Positioning sprites is currently done by manipulating the sprite&rsquo;s <code>rect</code> attribute.</p><p>It should be possible to position a <code>Sprite</code> object using a tuple <code>(x, y)</code> that would have the same effect.<br />The tuple would be used in accordance with the sprite&rsquo;s anchor point, as defined above.</p><p>The <code>x</code> and <code>y</code> values should be able to be float values, to allow for varying speeds; For example, moving a sprite by 0.1 pixels every frame and then the sprite would move 1 pixel every 10 frames.<br />The actual rendering would use rounded values.</p><h2>3. Visual attributes</h2><p>A sprite should have several attributes that affect its visual representation, and could be changed dynamically during the run of the game.</p><ul><li><strong>Visibility</strong>: A boolean to say whether the sprite should be rendered at all. Default is <code>true</code>.</li><li><strong>Scale</strong>: A float defining the aspect between the sprite&rsquo;s original size and what should appear on screen. Default is <code>1</code>.</li><li><strong>Rotation angle</strong>: A float representing the degree the sprite should be rotated with. The rotation is done around the anchor point. Default is <code>0</code>.</li><li><strong>Crop rectangle</strong>: A <code>rect</code> value with coordinates relative to the original sprite image, defining the part of the image to render. Default is <code>((0, 0), (w, h))</code>, with <code>w</code> and <code>h</code> being the image&rsquo;s width and height values.</li></ul><h2>4. Smarter layers</h2><p>A <code>Sprite</code> object should have a <code>layer</code> attribute, with an integer value representing the layer&rsquo;s z-index.<br />This is actually already done in <code>DirtySprite</code> and <code>LayeredUpdate</code>. We should have it for every sprite.</p><p>Rendering sprites should behave as in <code>LayeredUpdate</code>, maintaining a list of sprites ordered by their z-index.</p><h2>5. Aggregated sprites</h2><p>A new class <code>AggregatedSprite</code> extending <code>Sprite</code> that holds a list of other <code>Sprite</code> objects.</p><p>They are all positioned and rendered regularly on the screen, and the <code>AggregatedSprite</code> instance could be used to manipulate them together:</p><ul><li>Setting the <code>AggregatedSprite</code>&rsquo;s position to <code>(x, y)</code> would use these values as an offset for positioning its sprites.</li><li>Setting a value of one of the visual attributes would use this value to overwrite the same attribute for the sprites.</li></ul><h2>6. Sprite picking</h2><p>The screen should have a method to pick sprites by coordinates &ndash; that is, given a position <code>(x, y)</code> it should return a list of all sprites rendered at this point.</p><ul><li>Optional: Pass a flag to only pick visible sprites (<code>visible = true</code>).</li></ul><h2>7. Automated &ldquo;dirty&rdquo; rendering</h2><p>All of the sprites and sprite groups should have the dirty rendering functionality of <code>DirtySprite</code> and <code>LayeredDirty</code>.</p><p>Sprites should label themselves dirty automatically as soon as either their position, image, or any other visual attribute were changed.<br />This would then cause them to be re-rendered only when necessary.</p>
+    <content type="html"><![CDATA[<p>As a final step before getting busy with refactoring and reorganizing Pygame&#8217;s sprite classes, I&#8217;ve composed the following short paper describing what I want to get done on each 7 new features planned for this part of the project.</p>
+
+<p>These decisions are based on feedback and suggestions <a href="http://www.mail-archive.com/pygame-users@seul.org/msg16858.html">posted on the discussion list</a> and on the #pygame IRC channel, and also on my private research of other open-source game libraries: <a href="http://www.cocos2d-iphone.org/">cocos2d</a>, <a href="http://www.pyglet.org/">Pyglet</a>, <a href="http://www.eecis.udel.edu/~rdeaton/spyral/">Spyral</a> &amp; <a href="http://www.pygame.org/project-Gloss-1155-.html">Gloss</a>, among others.</p>
+
+<p>This isn&#8217;t a finalized spec of course, just my way of listing things I want to take care of, and along the way getting feedback from the community.</p>
+
+<p>As always, feel free to contact me with any suggestions or comments.</p>
+
+<hr />
+
+<h2>1. Anchor points</h2>
+
+<p>The <code>Sprite</code> object should have an <code>anchor</code> attribute, that could be set to either:</p>
+
+<ul>
+<li><code>(x, y)</code> representing an offset</li>
+<li>One of a set of predefined flags i.e. <code>CENTER</code>, <code>MIDBOTTOM</code>, <code>TOPLEFT</code>, that would remain appropriate even after transformations (scaling, rotating, etc).</li>
+</ul>
+
+
+<p>The default value would be <code>TOPLEFT</code>.</p>
+
+<p>The <code>anchor</code> attribute represents a point in the sprite that is used when moving and transforming the sprite.</p>
+
+<p>So for example, if a sprite&#8217;s anchor is <code>(10, 20)</code> and we move it to <code>(100, 100)</code> - then in result the anchor pixel would be positioned in <code>(100, 100)</code> - meaning in fact, that the sprite&#8217;s top left coordinates are <code>(90, 80)</code>.</p>
+
+<h2>2. Better positioning</h2>
+
+<p>Positioning sprites is currently done by manipulating the sprite&#8217;s <code>rect</code> attribute.</p>
+
+<p>It should be possible to position a <code>Sprite</code> object using a tuple <code>(x, y)</code> that would have the same effect.<br/>
+The tuple would be used in accordance with the sprite&#8217;s anchor point, as defined above.</p>
+
+<p>The <code>x</code> and <code>y</code> values should be able to be float values, to allow for varying speeds; For example, moving a sprite by 0.1 pixels every frame and then the sprite would move 1 pixel every 10 frames.<br/>
+The actual rendering would use rounded values.</p>
+
+<h2>3. Visual attributes</h2>
+
+<p>A sprite should have several attributes that affect its visual representation, and could be changed dynamically during the run of the game.</p>
+
+<ul>
+<li><strong>Visibility</strong>: A boolean to say whether the sprite should be rendered at all. Default is <code>true</code>.</li>
+<li><strong>Scale</strong>: A float defining the aspect between the sprite&#8217;s original size and what should appear on screen. Default is <code>1</code>.</li>
+<li><strong>Rotation angle</strong>: A float representing the degree the sprite should be rotated with. The rotation is done around the anchor point. Default is <code>0</code>.</li>
+<li><strong>Crop rectangle</strong>: A <code>rect</code> value with coordinates relative to the original sprite image, defining the part of the image to render. Default is <code>((0, 0), (w, h))</code>, with <code>w</code> and <code>h</code> being the image&#8217;s width and height values.</li>
+</ul>
+
+
+<h2>4. Smarter layers</h2>
+
+<p>A <code>Sprite</code> object should have a <code>layer</code> attribute, with an integer value representing the layer&#8217;s z-index.<br/>
+This is actually already done in <code>DirtySprite</code> and <code>LayeredUpdate</code>. We should have it for every sprite.</p>
+
+<p>Rendering sprites should behave as in <code>LayeredUpdate</code>, maintaining a list of sprites ordered by their z-index.</p>
+
+<h2>5. Aggregated sprites</h2>
+
+<p>A new class <code>AggregatedSprite</code> extending <code>Sprite</code> that holds a list of other <code>Sprite</code> objects.</p>
+
+<p>They are all positioned and rendered regularly on the screen, and the <code>AggregatedSprite</code> instance could be used to manipulate them together:</p>
+
+<ul>
+<li>Setting the <code>AggregatedSprite</code>&#8217;s position to <code>(x, y)</code> would use these values as an offset for positioning its sprites.</li>
+<li>Setting a value of one of the visual attributes would use this value to overwrite the same attribute for the sprites.</li>
+</ul>
+
+
+<h2>6. Sprite picking</h2>
+
+<p>The screen should have a method to pick sprites by coordinates - that is, given a position <code>(x, y)</code> it should return a list of all sprites rendered at this point.</p>
+
+<ul>
+<li>Optional: Pass a flag to only pick visible sprites (<code>visible = true</code>).</li>
+</ul>
+
+
+<h2>7. Automated &#8220;dirty&#8221; rendering</h2>
+
+<p>All of the sprites and sprite groups should have the dirty rendering functionality of <code>DirtySprite</code> and <code>LayeredDirty</code>.</p>
+
+<p>Sprites should label themselves dirty automatically as soon as either their position, image, or any other visual attribute were changed.<br/>
+This would then cause them to be re-rendered only when necessary.</p>
 ]]></content>
   </entry>
   
@@ -45,7 +254,74 @@
     <link href="http://n0nick.github.com/blog/2012/06/04/gsoc-journal-weeks-1-2/"/>
     <updated>2012-06-04T00:00:00+03:00</updated>
     <id>http://n0nick.github.com/blog/2012/06/04/gsoc-journal-weeks-1-2</id>
-    <content type="html"><![CDATA[<p>With the first 2 weeks of the GSoC coding period over, I thought I&rsquo;d post about what I&rsquo;ve been up to so far.</p><p>The start of the coding period took me by surprise. I had to learn about it from a post in the <a href="http://google-opensource.blogspot.com/">Google Open Source blog</a>.<br />I had to re-adjust and flex my schedule to get into working mode, and that wasn&rsquo;t too easy. That&rsquo;s why I&rsquo;m a bit late with my progress, compared with the timeline I described in <a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002">my application</a>. Nothing that I won&rsquo;t be able to fix later on, though :)</p><p>So in the past 2 weeks I was able to:</p><ul><li>Read through some of the <a href="https://bitbucket.org/pygame/pygame/src">Pygame source</a>, study the basics that get it going.</li><li>Specifically read through <a href="http://www.pygame.org/docs/ref/sprite.html">sprite.py</a> to understand the current state of the sprites system.</li><li>Set up my development environment so that it actually runs the framework and tests successfully.</li><li>Read through most of <a href="http://inventwithpython.com/makinggames.pdf">Making Games with Python &amp; Pygame</a>, going over the examples code.</li><li>Checked out a few of the <a href="http://www.pygame.org/docs/ref/examples.html">example games</a>, playing around with their source code.</li><li>Studied the <code>DirtySprite</code> and <code>LayeredDirty</code> classes and their use case.</li><li>Wrote a <a href="http://dotfile.n0nick.net/quick-dirty-using-pygames-dirtysprite-layered">DirtySprite and LayeredDirty tutorial</a>. This was <em>extremely</em> helpful in learning to use the feature. Great idea from mentor illume.</li><li>Sent a <a href="http://www.mail-archive.com/pygame-users@seul.org/msg16858.html">Call for Suggestions</a> to the mailing list regarding my planned features list for the sprite classes. Got tons of helpful feedback from the community.</li></ul><p>The last step helped me compose the following first draft of a sprites system features list:</p><ol><li>Better positioning, using float values.</li><li><em>Anchor points</em>.</li><li>Visual Attributes:<ul><li>Rotation angle</li><li>Scale</li><li>Crop rectangle</li><li>Visibility</li></ul></li><li><em>Smarter layers system</em>.</li><li><em>Aggregated sprites</em>.</li><li><em>Sprite picking</em>.</li><li>Automated &ldquo;dirty&rdquo; rendering.</li><li>Encapsulating the Collision Detection code.</li><li>Optional: Animation? Events?</li></ol><p>Again, this is just a first draft and all of the items are still in discussion and under consideration. <br />If anybody that&rsquo;s reading this here has any ideas for new features or notes on any of the items here, please feel free to write to me, either here, in the mailing list or via email.</p><h3>What&rsquo;s next?</h3><p>As a lesson from last year&rsquo;s GSoC, that I also had to start while a semester was still going, I decided on a little system: <br />Every weekend, after summing up what I&rsquo;ve been up to so far (i.e., this post) &ndash; I will decide on tasks for the next week in a specific format: A list of 4-5 minor tasks and one major task. <br />This way, I&rsquo;ll be able to finish the small tasks during the week, when I get back home from school or work. The large task would be done during the weekend.</p><p>So, this week I&rsquo;ll:</p><ol><li><del>Blog about the 2 weeks and what&rsquo;s next.</del></li><li>Research some of the features from the list (italic above; items 2, 4, 5, 6);<ul><li>What exactly is required?</li><li>How is it done in other libraries?</li><li>How should we do it?</li></ul></li><li>Weekend task: Start writing a paper defining the sprite project work, describing the features that would be implemented.</li></ol><p>Have a nice week!</p>
+    <content type="html"><![CDATA[<p>With the first 2 weeks of the GSoC coding period over, I thought I&#8217;d post about what I&#8217;ve been up to so far.</p>
+
+<p>The start of the coding period took me by surprise. I had to learn about it from a post in the <a href="http://google-opensource.blogspot.com/">Google Open Source blog</a>.<br/>
+I had to re-adjust and flex my schedule to get into working mode, and that wasn&#8217;t too easy. That&#8217;s why I&#8217;m a bit late with my progress, compared with the timeline I described in <a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002">my application</a>. Nothing that I won&#8217;t be able to fix later on, though :)</p>
+
+<p>So in the past 2 weeks I was able to:</p>
+
+<ul>
+<li>Read through some of the <a href="https://bitbucket.org/pygame/pygame/src">Pygame source</a>, study the basics that get it going.</li>
+<li>Specifically read through <a href="http://www.pygame.org/docs/ref/sprite.html">sprite.py</a> to understand the current state of the sprites system.</li>
+<li>Set up my development environment so that it actually runs the framework and tests successfully.</li>
+<li>Read through most of <a href="http://inventwithpython.com/makinggames.pdf">Making Games with Python &amp; Pygame</a>, going over the examples code.</li>
+<li>Checked out a few of the <a href="http://www.pygame.org/docs/ref/examples.html">example games</a>, playing around with their source code.</li>
+<li>Studied the <code>DirtySprite</code> and <code>LayeredDirty</code> classes and their use case.</li>
+<li>Wrote a <a href="http://dotfile.n0nick.net/quick-dirty-using-pygames-dirtysprite-layered">DirtySprite and LayeredDirty tutorial</a>. This was <em>extremely</em> helpful in learning to use the feature. Great idea from mentor illume.</li>
+<li>Sent a <a href="http://www.mail-archive.com/pygame-users@seul.org/msg16858.html">Call for Suggestions</a> to the mailing list regarding my planned features list for the sprite classes. Got tons of helpful feedback from the community.</li>
+</ul>
+
+
+<p>The last step helped me compose the following first draft of a sprites system features list:</p>
+
+<ol>
+<li>Better positioning, using float values.</li>
+<li><em>Anchor points</em>.</li>
+<li>Visual Attributes:
+
+<ul>
+<li>Rotation angle</li>
+<li>Scale</li>
+<li>Crop rectangle</li>
+<li>Visibility</li>
+</ul>
+</li>
+<li><em>Smarter layers system</em>.</li>
+<li><em>Aggregated sprites</em>.</li>
+<li><em>Sprite picking</em>.</li>
+<li>Automated &#8220;dirty&#8221; rendering.</li>
+<li>Encapsulating the Collision Detection code.</li>
+<li>Optional: Animation? Events?</li>
+</ol>
+
+
+<p>Again, this is just a first draft and all of the items are still in discussion and under consideration. <br/>
+If anybody that&#8217;s reading this here has any ideas for new features or notes on any of the items here, please feel free to write to me, either here, in the mailing list or via email.</p>
+
+<h3>What&#8217;s next?</h3>
+
+<p>As a lesson from last year&#8217;s GSoC, that I also had to start while a semester was still going, I decided on a little system: <br/>
+Every weekend, after summing up what I&#8217;ve been up to so far (i.e., this post) - I will decide on tasks for the next week in a specific format: A list of 4-5 minor tasks and one major task. <br/>
+This way, I&#8217;ll be able to finish the small tasks during the week, when I get back home from school or work. The large task would be done during the weekend.</p>
+
+<p>So, this week I&#8217;ll:</p>
+
+<ol>
+<li><del>Blog about the 2 weeks and what&#8217;s next.</del></li>
+<li>Research some of the features from the list (italic above; items 2, 4, 5, 6);
+
+<ul>
+<li>What exactly is required?</li>
+<li>How is it done in other libraries?</li>
+<li>How should we do it?</li>
+</ul>
+</li>
+<li>Weekend task: Start writing a paper defining the sprite project work, describing the features that would be implemented.</li>
+</ol>
+
+
+<p>Have a nice week!</p>
 ]]></content>
   </entry>
   
@@ -54,7 +330,181 @@
     <link href="http://n0nick.github.com/blog/2012/06/03/quick-dirty-using-pygames-dirtysprite-layered/"/>
     <updated>2012-06-03T00:00:00+03:00</updated>
     <id>http://n0nick.github.com/blog/2012/06/03/quick-dirty-using-pygames-dirtysprite-layered</id>
-    <content type="html"><![CDATA[<p>Knowing how to use <a href="http://www.pygame.org/">Pygame</a>&rsquo;s various <a href="http://www.pygame.org/docs/ref/sprite.html">sprite classes</a> is essential to getting good and efficient results when working on Pygame games.</p><p>Every computer game is made out of a loop that&rsquo;s constantly re-validating the input and the game data and refreshing the display accordingly. In fact, whenever I read the source code for a game I&rsquo;m surprised by how many tasks get done on each iteration, that is, dozens of times per second.</p><p>You can imagine that drawing things on the screen is one of the heavier tasks, and that&rsquo;s where the <a href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.DirtySprite"><code>DirtySprite</code></a> and <a href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.LayeredDirty"><code>LayeredDirty</code></a> classes come in. By using these two instead of the regular <code>Sprite</code> and <code>Group</code> classes, you can keep track on what parts of the screen need a refresh and what don&rsquo;t, and in turn, your game renders in a smarter and more efficient way.</p><p>In this short tutorial, I will show you a very basic use case for <a href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.DirtySprite"><code>DirtySprite</code></a> and how I implemented it in an existing game source.</p><p>The full source code for the tutorial, as well as a diff for each step, are all available to browse in the <a href="https://github.com/n0nick/dirty_chimp">dirty_chimp</a> project on GitHub.</p><h2>Pummel The Chimp</h2><p>As a simple basic game, we are going to use <a href="http://www.pygame.org/docs/tut/chimp/chimp.py.html">chimp.py</a>, an <strong>extremely</strong> basic game based on the infamous &ldquo;Win $$$&rdquo; banner ads of the 1990s.</p><p><img src="http://www.pygame.org/docs/tut/chimp/chimpshot.gif" alt="Pummel The Chimp, And Win $$$" /></p><p>The game comprises of an image of a chimp that&rsquo;s quickly floating from right to left, and a fist image representing the user&rsquo;s mouse cursor trying to punch it.</p><p>Writing this game is described in Pete Shinners&#8217; <a href="http://www.pygame.org/docs/tut/chimp/ChimpLineByLine.html">Line By Line Chimp</a> tutorial, in case you need to wrap your head around basic Pygame principles. Its original source code is available under <code>examples/chimp.py</code> in the Pygame distribution.</p><p>There are two sprites used in this game: The chimp and the fist.<br />The chimp is always undergoing a change, either in its position (running around) or its angle (spinning when punched).<br />The fist follows the cursor movement, if there was any, and on a click event, it is lowered by a few pixels for a second, to simulate a hit.</p><h2>The dirt</h2><h3>Using <code>DirtySprite</code></h3><p>First things first, we&rsquo;re going to use the <code>DirtySprite</code> class for both sprites. Of course, <code>DirtySprite</code> is a subclass of <code>Sprite</code>, so this change would have no effect for now:</p><div class="CodeRay">  <div class="code"><pre><span class="keyword">class</span> <span class="class">Fist</span>(pygame.sprite.DirtySprite):    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="predefined-constant">self</span>):        <span class="comment"># call DirtySprite initializer</span>        pygame.sprite.DirtySprite.__init__(<span class="predefined-constant">self</span>)<span class="keyword">class</span> <span class="class">Chimp</span>(pygame.sprite.DirtySprite):    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="predefined-constant">self</span>):        <span class="comment"># call DirtySprite initializer</span>        pygame.sprite.DirtySprite.__init__(<span class="predefined-constant">self</span>)</pre></div></div><p>Voila, <code>Fist</code> and <code>Chimp</code> are now <code>DirtySprite</code></p><p>Now, if we&rsquo;re going to keep the source as it is, the sprites would disappear immediately after first appearing. That is because we&rsquo;re going to make the rendering be dependent on their <code>dirty</code> flag (that is, they will only be updated if they have <code>dirty</code> = 1).</p><p>So to prevent this, for now, let&rsquo;s keep both of them always dirty after an <code>update</code>.<br />Add this to both classes:</p><div class="CodeRay">  <div class="code"><pre><span class="keyword">def</span> <span class="function">update</span>(<span class="predefined-constant">self</span>):    ...    <span class="predefined-constant">self</span>.dirty = <span class="integer">1</span></pre></div></div><p>Note that as we mentioned before, the chimp is always either moving or spinning. That means we can have it always being <code>dirty</code>. So we&rsquo;re basically done with it!</p><h3>Grouping the sprites</h3><p>Now, in order to use the special dirty-rendering logic, we will need to use <code>LayeredDirty</code>, which is a group class for holding and handling multiple dirty sprites.</p><p>We&rsquo;re going to use it instead of the regular <code>RenderPlain</code> (right before the main loop):</p><div class="CodeRay">  <div class="code"><pre>allsprites = pygame.sprite.LayeredDirty((fist, chimp))</pre></div></div><p>Now comes the dirty drawing logic:<br />Instead of drawing everything to the screen and using <code>flip</code> to replace the screen content every time, we will use <code>LayeredDirty</code>&rsquo;s magic at the end of each loop iteration:</p><div class="CodeRay">  <div class="code"><pre><span class="comment"># Draw Everything</span>screen.blit(background, (<span class="integer">0</span>, <span class="integer">0</span>))rects = allsprites.draw(screen)pygame.display.update(rects)</pre></div></div><p>So we store the group&rsquo;s <code>draw</code> results in <code>rects</code>, which is basically only the areas of the screen that needs re-rendering. When passing these to <code>update</code>, we get exactly what we wanted.</p><p>And, because we keep adding to the screen and not necessarily re-drawing it, we&rsquo;re going to need to tell the <code>LayeredDirty</code> instance how to clear previous data, that is, it&rsquo;s going to use our predefined <code>background</code> when it clears parts of the screen. Let&rsquo;s add this line right before the main loop, after assigning to <code>allsprites</code>:</p><div class="CodeRay">  <div class="code"><pre>allsprites.clear(screen, background)</pre></div></div><p>We should be able to run the game now. But we want to be smarter about drawing the fist sprite.</p><h3>Re-thinking <code>Fist</code>&rsquo;s rendering</h3><p>Now, this is all nice but we want to be smarter about dirtying up our sprites.</p><p>Let&rsquo;s do that with <code>Fist</code>: Of course we&rsquo;ll still need to re-draw it whenever the user moved it (with the mouse cursor) or punched (using a click). But in any other case, i.e., when the mouse does not move, there&rsquo;s no need to change the <code>Fist</code> object.<br />So, let&rsquo;s change <code>update</code>, which currently handles every iteration the same (and sets <code>dirty</code> to 1).</p><p>We&rsquo;re going to move everything that&rsquo;s related to following the user&rsquo;s mouse to a new method, <code>move</code>:</p><div class="CodeRay">  <div class="code"><pre><span class="keyword">def</span> <span class="function">move</span>(<span class="predefined-constant">self</span>):    <span class="string"><span class="delimiter">&quot;</span><span class="content">move the fist based on the mouse position</span><span class="delimiter">&quot;</span></span>    pos = pygame.mouse.get_pos()    <span class="predefined-constant">self</span>.rect.midtop = pos    <span class="predefined-constant">self</span>.dirty = <span class="integer">1</span></pre></div></div><p>And <code>update</code> would just have to handle the punch animation, when necessary:</p><div class="CodeRay">  <div class="code"><pre><span class="keyword">def</span> <span class="function">update</span>(<span class="predefined-constant">self</span>):    <span class="string"><span class="delimiter">&quot;</span><span class="content">handle the punching fist position</span><span class="delimiter">&quot;</span></span>    <span class="keyword">if</span> <span class="predefined-constant">self</span>.punching:        <span class="predefined-constant">self</span>.rect.move_ip(<span class="integer">5</span>, <span class="integer">10</span>)        <span class="predefined-constant">self</span>.dirty = <span class="integer">1</span></pre></div></div><p>As you see, we haven&rsquo;t changed <code>update</code>&rsquo;s code at all, apart from splitting it into 2 functions and adding <code>self.dirty = 1</code> when something changed. This would tell <code>LayeredDirty</code> to return the sprite&rsquo;s rect as something that requires rendering.</p><p>So now, whenever the user clicks the mouse, <code>self.punching</code> is going to be 1 (as defined in the <code>punch</code> method) and later on, <code>update</code> will change the sprite accordingly and mark it dirty.</p><p>We just need to add a hook to the mouse motion event, so that we&rsquo;ll call <code>move</code> whenever the mouse is moved. Let&rsquo;s add these two lines at the bottom of the event handling block:</p><div class="CodeRay">  <div class="code"><pre><span class="keyword">elif</span> event.type == MOUSEMOTION:    fist.move()</pre></div></div><h3>Some final tweaks</h3><p>We&rsquo;re done with most of the work. There are just a few small issues to address at this point:</p><p>First, notice that even though we&rsquo;re using the smarter dirty rendering now, we&rsquo;re still re-rendering the background image on every loop iteration:</p><div class="CodeRay">  <div class="code"><pre><span class="comment"># Draw Everything</span>screen.blit(background, (<span class="integer">0</span>, <span class="integer">0</span>))</pre></div></div><p>This is useless, because we already set our <code>LayeredDirty</code> to clear with <code>background</code>.<br />So you can go ahead and remove that line altogether, we don&rsquo;t need it anymore.</p><p>Now, we have another small bug after a punch is made (i.e. a click event): The <code>Fist</code> sprite is lowered down in the screen, but never goes up. In the older code, it&rsquo;d fix its position in the next iteration by following the user&rsquo;s cursor again. But in our code, if there was no mouse motion event, we don&rsquo;t bother updating the sprite.</p><p>We can fix that by calling <code>move</code> after a punch is finished, that is, at the end of <code>unpunch</code>:</p><div class="CodeRay">  <div class="code"><pre><span class="keyword">def</span> <span class="function">unpunch</span>(<span class="predefined-constant">self</span>):    <span class="string"><span class="delimiter">&quot;</span><span class="content">called to pull the fist back</span><span class="delimiter">&quot;</span></span>    <span class="predefined-constant">self</span>.punching = <span class="integer">0</span>    <span class="predefined-constant">self</span>.move()  <span class="comment"># reset to mouse's position</span></pre></div></div><p>And finally, if you run the code we have so far you might notice that the chimp image can get on top of the fist sprite! That looks strange and unwanted.<br />Fortunately, we can fix that by ordering the sprites we pass <code>LayeredDirty</code>, so that the chimp sprite is always rendered first:</p><div class="CodeRay">  <div class="code"><pre>allsprites = pygame.sprite.LayeredDirty((chimp, fist))</pre></div></div><p>Now it all looks good.</p><h2>And we&rsquo;re done.</h2><p>This wasn&rsquo;t so difficult, was it?<br />Running the code now would render exactly the same game as the good old <code>chimp.py</code>.</p><p>Yup. Exactly the same game.<br />But &ndash; we were able to learn along the way, and get to know <a href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.DirtySprite"><code>DirtySprite</code></a> and <a href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.LayeredDirty"><code>LayeredDirty</code></a> which are two classes that could provide a great deal of help in our future works.</p><p>Also, comparing the new game with the original version, I managed to see a slight improvement in performance: CPU percents were cut down from 5.5% to about 5.0%, and the process&#8217; threads number was fixed on 4 instead of around 5-7.<br />These are indeed extremely small changes, but keep in mind that (a) our example game is very simple as it is, and (b) it&rsquo;s not the most <em>classic</em> example, as we have the chimp sprite that&rsquo;s always dirty and re-rendering.<br />Still, I think that&rsquo;s pretty cool.</p><p>You can find the full code of this tutorial under the <a href="https://github.com/n0nick/dirty_chimp">dirty_chimp</a> project on GitHub.<br />The code for each step was posted at a separate commit, so you can check out the process in the project&rsquo;s <a href="https://github.com/n0nick/dirty_chimp/commits/master">Commit History</a> page.</p>
+    <content type="html"><![CDATA[<p>Knowing how to use <a href="http://www.pygame.org/">Pygame</a>&#8217;s various <a href="http://www.pygame.org/docs/ref/sprite.html">sprite classes</a> is essential to getting good and efficient results when working on Pygame games.</p>
+
+<p>Every computer game is made out of a loop that&#8217;s constantly re-validating the input and the game data and refreshing the display accordingly. In fact, whenever I read the source code for a game I&#8217;m surprised by how many tasks get done on each iteration, that is, dozens of times per second.</p>
+
+<p>You can imagine that drawing things on the screen is one of the heavier tasks, and that&#8217;s where the <a href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.DirtySprite"><code>DirtySprite</code></a> and <a href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.LayeredDirty"><code>LayeredDirty</code></a> classes come in. By using these two instead of the regular <code>Sprite</code> and <code>Group</code> classes, you can keep track on what parts of the screen need a refresh and what don&#8217;t, and in turn, your game renders in a smarter and more efficient way.</p>
+
+<p>In this short tutorial, I will show you a very basic use case for <a href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.DirtySprite"><code>DirtySprite</code></a> and how I implemented it in an existing game source.</p>
+
+<p>The full source code for the tutorial, as well as a diff for each step, are all available to browse in the <a href="https://github.com/n0nick/dirty_chimp">dirty_chimp</a> project on GitHub.</p>
+
+<h2>Pummel The Chimp</h2>
+
+<p>As a simple basic game, we are going to use <a href="http://www.pygame.org/docs/tut/chimp/chimp.py.html">chimp.py</a>, an <strong>extremely</strong> basic game based on the infamous &#8220;Win $$$&#8221; banner ads of the 1990s.</p>
+
+<p><img src="http://www.pygame.org/docs/tut/chimp/chimpshot.gif" alt="Pummel The Chimp, And Win $$$" /></p>
+
+<p>The game comprises of an image of a chimp that&#8217;s quickly floating from right to left, and a fist image representing the user&#8217;s mouse cursor trying to punch it.</p>
+
+<p>Writing this game is described in Pete Shinners&#8217; <a href="http://www.pygame.org/docs/tut/chimp/ChimpLineByLine.html">Line By Line Chimp</a> tutorial, in case you need to wrap your head around basic Pygame principles. Its original source code is available under <code>examples/chimp.py</code> in the Pygame distribution.</p>
+
+<p>There are two sprites used in this game: The chimp and the fist.<br/>
+The chimp is always undergoing a change, either in its position (running around) or its angle (spinning when punched).<br/>
+The fist follows the cursor movement, if there was any, and on a click event, it is lowered by a few pixels for a second, to simulate a hit.</p>
+
+<h2>The dirt</h2>
+
+<h3>Using <code>DirtySprite</code></h3>
+
+<p>First things first, we&#8217;re going to use the <code>DirtySprite</code> class for both sprites. Of course, <code>DirtySprite</code> is a subclass of <code>Sprite</code>, so this change would have no effect for now:</p>
+
+<pre><code>#!python
+class Fist(pygame.sprite.DirtySprite):
+    def __init__(self):
+        # call DirtySprite initializer
+        pygame.sprite.DirtySprite.__init__(self)
+
+
+#!python
+class Chimp(pygame.sprite.DirtySprite):
+    def __init__(self):
+        # call DirtySprite initializer
+        pygame.sprite.DirtySprite.__init__(self)
+</code></pre>
+
+<p>Voila, <code>Fist</code> and <code>Chimp</code> are now <code>DirtySprite</code></p>
+
+<p>Now, if we&#8217;re going to keep the source as it is, the sprites would disappear immediately after first appearing. That is because we&#8217;re going to make the rendering be dependent on their <code>dirty</code> flag (that is, they will only be updated if they have <code>dirty</code> = 1).</p>
+
+<p>So to prevent this, for now, let&#8217;s keep both of them always dirty after an <code>update</code>.<br/>
+Add this to both classes:</p>
+
+<pre><code>#!python
+def update(self):
+    ...
+    self.dirty = 1
+</code></pre>
+
+<p>Note that as we mentioned before, the chimp is always either moving or spinning. That means we can have it always being <code>dirty</code>. So we&#8217;re basically done with it!</p>
+
+<h3>Grouping the sprites</h3>
+
+<p>Now, in order to use the special dirty-rendering logic, we will need to use <code>LayeredDirty</code>, which is a group class for holding and handling multiple dirty sprites.</p>
+
+<p>We&#8217;re going to use it instead of the regular <code>RenderPlain</code> (right before the main loop):</p>
+
+<pre><code>#!python
+allsprites = pygame.sprite.LayeredDirty((fist, chimp))
+</code></pre>
+
+<p>Now comes the dirty drawing logic:<br/>
+Instead of drawing everything to the screen and using <code>flip</code> to replace the screen content every time, we will use <code>LayeredDirty</code>&#8217;s magic at the end of each loop iteration:</p>
+
+<pre><code>#!python
+# Draw Everything
+screen.blit(background, (0, 0))
+rects = allsprites.draw(screen)
+pygame.display.update(rects)
+</code></pre>
+
+<p>So we store the group&#8217;s <code>draw</code> results in <code>rects</code>, which is basically only the areas of the screen that needs re-rendering. When passing these to <code>update</code>, we get exactly what we wanted.</p>
+
+<p>And, because we keep adding to the screen and not necessarily re-drawing it, we&#8217;re going to need to tell the <code>LayeredDirty</code> instance how to clear previous data, that is, it&#8217;s going to use our predefined <code>background</code> when it clears parts of the screen. Let&#8217;s add this line right before the main loop, after assigning to <code>allsprites</code>:</p>
+
+<pre><code>#!python
+allsprites.clear(screen, background)
+</code></pre>
+
+<p>We should be able to run the game now. But we want to be smarter about drawing the fist sprite.</p>
+
+<h3>Re-thinking <code>Fist</code>&#8217;s rendering</h3>
+
+<p>Now, this is all nice but we want to be smarter about dirtying up our sprites.</p>
+
+<p>Let&#8217;s do that with <code>Fist</code>: Of course we&#8217;ll still need to re-draw it whenever the user moved it (with the mouse cursor) or punched (using a click). But in any other case, i.e., when the mouse does not move, there&#8217;s no need to change the <code>Fist</code> object.<br/>
+So, let&#8217;s change <code>update</code>, which currently handles every iteration the same (and sets <code>dirty</code> to 1).</p>
+
+<p>We&#8217;re going to move everything that&#8217;s related to following the user&#8217;s mouse to a new method, <code>move</code>:</p>
+
+<pre><code>#!python
+def move(self):
+    "move the fist based on the mouse position"
+    pos = pygame.mouse.get_pos()
+    self.rect.midtop = pos
+    self.dirty = 1
+</code></pre>
+
+<p>And <code>update</code> would just have to handle the punch animation, when necessary:</p>
+
+<pre><code>#!python
+def update(self):
+    "handle the punching fist position"
+    if self.punching:
+        self.rect.move_ip(5, 10)
+        self.dirty = 1
+</code></pre>
+
+<p>As you see, we haven&#8217;t changed <code>update</code>&#8217;s code at all, apart from splitting it into 2 functions and adding <code>self.dirty = 1</code> when something changed. This would tell <code>LayeredDirty</code> to return the sprite&#8217;s rect as something that requires rendering.</p>
+
+<p>So now, whenever the user clicks the mouse, <code>self.punching</code> is going to be 1 (as defined in the <code>punch</code> method) and later on, <code>update</code> will change the sprite accordingly and mark it dirty.</p>
+
+<p>We just need to add a hook to the mouse motion event, so that we&#8217;ll call <code>move</code> whenever the mouse is moved. Let&#8217;s add these two lines at the bottom of the event handling block:</p>
+
+<pre><code>#!python
+elif event.type == MOUSEMOTION:
+    fist.move()
+</code></pre>
+
+<h3>Some final tweaks</h3>
+
+<p>We&#8217;re done with most of the work. There are just a few small issues to address at this point:</p>
+
+<p>First, notice that even though we&#8217;re using the smarter dirty rendering now, we&#8217;re still re-rendering the background image on every loop iteration:</p>
+
+<pre><code>#!python
+# Draw Everything
+screen.blit(background, (0, 0))
+</code></pre>
+
+<p>This is useless, because we already set our <code>LayeredDirty</code> to clear with <code>background</code>.<br/>
+So you can go ahead and remove that line altogether, we don&#8217;t need it anymore.</p>
+
+<p>Now, we have another small bug after a punch is made (i.e. a click event): The <code>Fist</code> sprite is lowered down in the screen, but never goes up. In the older code, it&#8217;d fix its position in the next iteration by following the user&#8217;s cursor again. But in our code, if there was no mouse motion event, we don&#8217;t bother updating the sprite.</p>
+
+<p>We can fix that by calling <code>move</code> after a punch is finished, that is, at the end of <code>unpunch</code>:</p>
+
+<pre><code>#!python
+def unpunch(self):
+    "called to pull the fist back"
+    self.punching = 0
+    self.move()  # reset to mouse's position
+</code></pre>
+
+<p>And finally, if you run the code we have so far you might notice that the chimp image can get on top of the fist sprite! That looks strange and unwanted.<br/>
+Fortunately, we can fix that by ordering the sprites we pass <code>LayeredDirty</code>, so that the chimp sprite is always rendered first:</p>
+
+<pre><code>#!python
+allsprites = pygame.sprite.LayeredDirty((chimp, fist))
+</code></pre>
+
+<p>Now it all looks good.</p>
+
+<h2>And we&#8217;re done.</h2>
+
+<p>This wasn&#8217;t so difficult, was it?<br/>
+Running the code now would render exactly the same game as the good old <code>chimp.py</code>.</p>
+
+<p>Yup. Exactly the same game.<br/>
+But - we were able to learn along the way, and get to know <a href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.DirtySprite"><code>DirtySprite</code></a> and <a href="http://www.pygame.org/docs/ref/sprite.html#pygame.sprite.LayeredDirty"><code>LayeredDirty</code></a> which are two classes that could provide a great deal of help in our future works.</p>
+
+<p>Also, comparing the new game with the original version, I managed to see a slight improvement in performance: CPU percents were cut down from 5.5% to about 5.0%, and the process&#8217; threads number was fixed on 4 instead of around 5-7.<br/>
+These are indeed extremely small changes, but keep in mind that (a) our example game is very simple as it is, and (b) it&#8217;s not the most <em>classic</em> example, as we have the chimp sprite that&#8217;s always dirty and re-rendering.<br/>
+Still, I think that&#8217;s pretty cool.</p>
+
+<p>You can find the full code of this tutorial under the <a href="https://github.com/n0nick/dirty_chimp">dirty_chimp</a> project on GitHub.<br/>
+The code for each step was posted at a separate commit, so you can check out the process in the project&#8217;s <a href="https://github.com/n0nick/dirty_chimp/commits/master">Commit History</a> page.</p>
 ]]></content>
   </entry>
   
@@ -63,7 +513,32 @@
     <link href="http://n0nick.github.com/blog/2012/05/15/introducing-the-pushbag-jar/"/>
     <updated>2012-05-15T00:00:00+03:00</updated>
     <id>http://n0nick.github.com/blog/2012/05/15/introducing-the-pushbag-jar</id>
-    <content type="html"><![CDATA[<p>We use <a href="http://bazaar.canonical.com/" target="_blank">Bazaar</a> for version control in Waze, mainly for legacy reasons. We don&#8217;t like it that much (compared to Git), but it&#8217;s working.</p><p>However, as our web team is growing, we find ourselves struggling over and over again to understand why something that worked a few minutes ago (before the <a href="http://wiki.bazaar.canonical.com/Merge" target="_blank">merge</a>) doesn&#8217;t anymore.</p><p>The thing is, it&#8217;s usually somebody&#8217;s fault. And that person should be educated.<br />Instead of straightforward educating, we decided to go with humiliating. Much more fun this way.</p><p>Thus came <strong><a href="http://n0nick.github.com/pushbag/" target="_blank">The Pushbag Jar</a></strong>, modeled after <a href="http://www.youtube.com/watch?v=oIrFhZe_dD4" target="_blank">New Girl&#8217;s Douchebag Jar</a>. We wrote down a few basic, civil rules, that if you break them - you have to pay, and also move the jar to your desk, so everyone beholds your pushbaggery.</p><p><iframe src="http://www.youtube.com/embed/oIrFhZe_dD4?wmode=transparent" allowfullscreen frameborder="0" height="417" width="500"></iframe></p><p>You can see our rules list <a href="http://n0nick.github.com/pushbag/" target="_blank">on this page</a>.<br />We haven&#8217;t decided on what to do with the collected taxes yet, but I&#8217;ll let you know if it&#8217;s something funny.&nbsp;</p>
+    <content type="html"><![CDATA[<p>We use <a href="http://bazaar.canonical.com/">Bazaar</a> for version control in
+Waze, mainly for legacy reasons. We don&#8217;t like it that much (compared to
+Git), but it&#8217;s working.</p>
+
+<p>However, as our web team is growing, we find ourselves struggling over
+and over again to understand why something that worked a few minutes ago
+(before the <a href="http://wiki.bazaar.canonical.com/Merge">merge</a>) doesn&#8217;t
+anymore.</p>
+
+<p>The thing is, it&#8217;s usually somebody&#8217;s fault. And that person should be
+educated.
+Instead of straightforward educating, we decided to go with humiliating.
+Much more fun this way.</p>
+
+<p>Thus came <strong><a href="http://n0nick.github.com/pushbag/">The Pushbag Jar</a></strong>,
+modeled after <a href="http://www.youtube.com/watch?v=oIrFhZe_dD4">New Girl&#8217;s Douchebag
+Jar</a>. We wrote down a few
+basic, civil rules, that if you break them - you have to pay, and also
+move the jar to your desk, so everyone beholds your pushbaggery.</p>
+
+<iframe width="500" height="417" src="http://www.youtube.com/embed/oIrFhZe_dD4" frameborder="0" allowfullscreen></iframe>
+
+
+<p>You can see our rules list <a href="http://n0nick.github.com/pushbag/">on this page</a>.<br/>
+We haven&#8217;t decided on what to do with the collected taxes yet, but I&#8217;ll
+let you know if it&#8217;s something funny. </p>
 ]]></content>
   </entry>
   
@@ -72,7 +547,16 @@
     <link href="http://n0nick.github.com/blog/2012/04/23/summer-plans-pygame-gsoc-project/"/>
     <updated>2012-04-23T00:00:00+03:00</updated>
     <id>http://n0nick.github.com/blog/2012/04/23/summer-plans-pygame-gsoc-project</id>
-    <content type="html"><![CDATA[<p>Well, after about an hour of repeatedly refreshing the <a href="http://www.google-melange.com/gsoc/projects/list/google/gsoc2012">Accepted Projects page</a> in Google&#8217;s GSoC website, I ended up getting the news by email: <a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002">my project proposal for Pygame</a> was accepted, and I&#8217;ll be working on my project starting in May 21st.</p><p><a href="http://dotfile.n0nick.net/google-summer-of-code-2012-applying-for-pygam">As I already said</a>, I&#8217;m really excited about this project and about the opportunity!<br />Unfortunately, I have to wait with the plans until later, as I have a mid-term tomorrow morning.</p><p>Here we go again!</p>
+    <content type="html"><![CDATA[<p>Well, after about an hour of repeatedly refreshing the <a href="http://www.google-melange.com/gsoc/projects/list/google/gsoc2012">Accepted Projects page</a>
+in Google&#8217;s GSoC website, I ended up getting the news by email:
+<a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002">my project proposal for Pygame</a> was accepted, and I&#8217;ll be working on my project
+starting in May 21st.</p>
+
+<p><a href="http://dotfile.n0nick.net/google-summer-of-code-2012-applying-for-pygam">As I already said</a>, I&#8217;m really excited about this project and about the opportunity!<br/>
+Unfortunately, I have to wait with the plans until later, as I have a mid-term
+tomorrow morning.</p>
+
+<p>Here we go again!</p>
 ]]></content>
   </entry>
   
@@ -81,7 +565,301 @@
     <link href="http://n0nick.github.com/blog/2012/04/13/google-summer-of-code-2012-applying-for-pygam/"/>
     <updated>2012-04-13T00:00:00+03:00</updated>
     <id>http://n0nick.github.com/blog/2012/04/13/google-summer-of-code-2012-applying-for-pygam</id>
-    <content type="html"><![CDATA[<p>While I&#8217;m fully aware that I haven&#8217;t posted here for more than six months, I&#8217;m going to completely ignore this and <a href="http://www.guardian.co.uk/lifeandstyle/gallery/2009/mar/17/keep-calm-carry-on-pictures?picture=344713815" target="_blank">carry on</a>. Hope that would work.</p><p style="text-align: center;">*</p><p><a href="http://code.google.com/soc/" target="_blank">Google Summer of Code</a> is a brilliant thing. For those of you who don&#8217;t know it, every summer Google uses its influence and many dollars to connect Computer Science students with open source projects, paying students for a 3 months long contribution to an accepted open source project.<br />Students win, because they gain experience while studying (and also, dollars).<br />Open source projects win, because they can get a lot done during the summer, and &#8216;recruit&#8217; new contributors.<br />Open source wins, because more young students are familiar with it and the way it works.<br />Google wins, because it can&#8217;t ever lose.</p><p>During the 2011 summer I&#8217;ve participated in GSoC, <a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2011/n0nick/1" target="_blank">developing a Maltese-Hebrew machine translation module</a> for the <a href="http://www.apertium.org/">Apertium</a> open source translation toolkit.<br />It was a lot of fun and a whole lot of work. I learned an absurd amount of stuff about computational linguistics, text manipulation, Python work and open source projects internals. I&#8217;ve worked with some really cool people. And I actually built a machine translation module.</p><p>But it was also somewhat overwhelming, merely from a logistic point of view.<br />You see, even though most GSoC students are internationals, Google&#8217;s timeline is set according to that of American schools. So instead of using my summer vacation for the project, I had to start work during my finals period. This wasn&#8217;t fun. And for most of the development time, I had to juggle between school, GSoC work, and my dayjob at Waze. This wasn&#8217;t fun at all.</p><p>Why, then, would I apply again?<br />My best guess is I&#8217;m too much of a nerd, and an open source geek, to miss such a brilliant opportunity.</p><p>So <a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002" target="_blank">here I go again</a>. Last week I submitted my proposal to contribute to the <a href="http://pygame.org/" target="_blank">Pygame</a> project.</p><p>Pygame is an open source Python library for building games. Yes, actual computer games. With graphics and stories and high scores and all. They&#8217;re doing pretty good, and I was actually just checking it out using the new <a href="http://inventwithpython.com/pygame/index.html" target="_blank">Making Games with Python</a> book when I noticed they&#8217;re participating in GSoC this year.</p><p><a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002" target="_blank">My project proposal</a> is about re-designing and re-writing their Sprite and Scene systems, which are two very basic modules that handle graphics and game workflow.<br />These are very basic, fundamental modules, which mean a large part of the work would consist of consulting the Pygame community, thinking and designing.</p><p>Three reasons I&#8217;m hyped about this project:</p><ol><li>It&#8217;s game development! The reason I got into programming all along! Which is pretty awesome. And also, it&#8217;s a lot different than the programming I&#8217;m used to, and that&#8217;s cool too.</li><li>It&#8217;s about code design and best practices, which is a part of development I&#8217;ve grown to really like. This is a great opportunity to evolve in this field.</li><li>It&#8217;s about working with a large open source community, and using a lot of feedback. Which is always fun, and very educating.</li></ol><p>Two things I&#8217;m not so excited about:</p><ol><li>It falls on my finals period this year too. So, another month of juggling.</li><li>It might not happen at all! Right now my proposal is reviewed by Pygame and <a href="http://python.org/psf/" target="_blank">The Python Software Foundation</a> and accepted proposals will only be announced on April 23rd. Until then, all I have is suspense.</li></ol><p>Last year, I didn&#8217;t have any blog set up and I managed <a href="http://wiki.apertium.org/wiki/User:N0nick/GSoC_Journal" target="_blank">my project journal</a> in the Apertium wiki.<br />So I was thinking, this year, if all goes well, I could use this here blog to tell you (and the Pygame guys) about the progress I&#8217;m making and about the many things I&#8217;m learning in the process. Could be nice.</p><p>So, here&#8217;s to that.</p>
+    <content type="html"><![CDATA[<p>While I&#8217;m fully aware that I haven&#8217;t posted here for more than six
+months, I&#8217;m going to completely ignore this and <a href="http://www.guardian.co.uk/lifeandstyle/gallery/2009/mar/17/keep-calm-carry-on-pictures?picture=344713815">carry
+on</a>.
+Hope that would work.</p>
+
+<center>\*</center>
+
+
+<p><a href="http://code.google.com/soc/">Google Summer of Code</a> is a brilliant
+thing. For those of you who don&#8217;t know it, every summer Google uses its
+influence and many dollars to connect Computer Science students with
+open source projects, paying students for a 3 months long contribution
+to an accepted open source project.</p>
+
+<p>Students win, because they gain experience while studying (and also,
+dollars).<br/>
+Open source projects win, because they can get a lot done during the
+summer, and &#8216;recruit&#8217; new contributors.<br/>
+Open source wins, because more young students are familiar with it and
+the way it works.<br/>
+Google wins, because it can&#8217;t ever lose.</p>
+
+<p>During the 2011 summer I&#8217;ve participated in GSoC, <a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2011/n0nick/1">developing a
+Maltese-Hebrew machine translation
+module</a>
+for the <a href="http://www.apertium.org/">Apertium</a> open source translation
+toolkit.<br/>
+It was a lot of fun and a whole lot of work. I learned an absurd amount
+of stuff about computational linguistics, text manipulation, Python work
+and open source projects internals. I&#8217;ve worked with some really cool
+people. And I actually built a machine translation module.</p>
+
+<p>But it was also somewhat overwhelming, merely from a logistic point of
+view.<br/>
+You see, even though most GSoC students are internationals, Google&#8217;s
+timeline is set according to that of American schools. So instead of
+using my summer vacation for the project, I had to start work during my
+finals period. This wasn&#8217;t fun. And for most of the development time, I
+had to juggle between school, GSoC work, and my dayjob at Waze. This
+wasn&#8217;t fun at all.</p>
+
+<p>Why, then, would I apply again?<br/>
+My best guess is I&#8217;m too much of a nerd, and an open source geek, to
+miss such a brilliant opportunity.</p>
+
+<p>So <a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002">here I go
+again</a>.
+Last week I submitted my proposal to contribute to the
+<a href="http://pygame.org/">Pygame</a> project.</p>
+
+<p>Pygame is an open source Python library for building games. Yes, actual
+computer games. With graphics and stories and high scores and all.
+They&#8217;re doing pretty good, and I was actually just checking it out using
+the new <a href="http://inventwithpython.com/pygame/index.html">Making Games with
+Python</a> book when I
+noticed they&#8217;re participating in GSoC this year.</p>
+
+<p><a href="http://www.google-melange.com/gsoc/proposal/review/google/gsoc2012/n0nick/28002">My project
+proposal</a>
+is about re-designing and re-writing their Sprite and Scene systems,
+which are two very basic modules that handle graphics and game
+workflow.<br/>
+These are very basic, fundamental modules, which mean a large part of
+the work would consist of consulting the Pygame community, thinking and
+designing.</p>
+
+<p>Three reasons I&#8217;m hyped about this project:</p>
+
+<ol>
+<li>It&#8217;s game development! The reason I got into programming all along!
+Which is pretty awesome. And also, it&#8217;s a lot different than the
+programming I&#8217;m used to, and that&#8217;s cool too.</li>
+<li>It&#8217;s about code design and best practices, which is a part of
+development I&#8217;ve grown to really like. This is a great opportunity
+to evolve in this field.</li>
+<li>It&#8217;s about working with a large open source community, and using a
+lot of feedback. Which is always fun, and very educating.</li>
+</ol>
+
+
+<p>Two things I&#8217;m not so excited about:</p>
+
+<ol>
+<li>It falls on my finals period this year too. So, another month of
+juggling.</li>
+<li>It might not happen at all! Right now my proposal is reviewed by
+Pygame and <a href="http://python.org/psf/">The Python Software Foundation</a>
+and accepted proposals will only be announced on April 23rd. Until
+then, all I have is suspense.</li>
+</ol>
+
+
+<p>Last year, I didn&#8217;t have any blog set up and I managed <a href="http://wiki.apertium.org/wiki/User:N0nick/GSoC_Journal">my project
+journal</a> in the
+Apertium wiki.</p>
+
+<p>So I was thinking, this year, if all goes well, I could use this here
+blog to tell you (and the Pygame guys) about the progress I&#8217;m making and
+about the many things I&#8217;m learning in the process. Could be nice.</p>
+
+<p>So, here&#8217;s to that.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Slowing down jQuery]]></title>
+    <link href="http://n0nick.github.com/blog/2011/09/05/slowing-down-jquery/"/>
+    <updated>2011-09-05T00:00:00+03:00</updated>
+    <id>http://n0nick.github.com/blog/2011/09/05/slowing-down-jquery</id>
+    <content type="html"><![CDATA[<p>I wanted to work on adding a nice &#8216;loading&#8230;&#8217; effect to my application,
+of which I have little access to its server code. I needed to find a way
+to slow down my AJAX calls, so I can see the effect and tweak it in my
+browser.</p>
+
+<p>Unfortunately, AJAX is too fast on a local environment, and I couldn&#8217;t
+find anything about slowing jQuery down (all Google found were &#8216;jQuery
+script too slow&#8217; question pages).</p>
+
+<p>Fortunately, a co-worker and I figured that we could take advantage of
+the new <a href="http://api.jquery.com/category/deferred-object/">jQuery Deferred
+objects</a>.<br/>
+I added this line to a function that wraps AJAX calls:</p>
+
+<div><script src='https://gist.github.com/1194488.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>And it worked like magic.</p>
+
+<p>It merges the original AJAX&#8217;s promise along with something that takes
+time (i.e. the 3s <code>fadeOut</code> animation), and then uses a <a href="http://api.jquery.com/deferred.pipe/">deferred
+pipe</a> to make the promise only
+return the original AJAX result.</p>
+
+<p>Cool!</p>
+
+<p>You use it like this:</p>
+
+<div><script src='https://gist.github.com/1194515.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Classic browser politics: Are DOM elements global variables?]]></title>
+    <link href="http://n0nick.github.com/blog/2011/08/30/classic-browser-politics-are-dom-elements-global-variables/"/>
+    <updated>2011-08-30T00:00:00+03:00</updated>
+    <id>http://n0nick.github.com/blog/2011/08/30/classic-browser-politics-are-dom-elements-global-variables</id>
+    <content type="html"><![CDATA[<p>This is hilarious:</p>
+
+<p>A co-worker noticed something strange happening in his Chrome browser:
+Every element in an HTML page that has an <code>id</code> attribute gets attached
+as a member of the global <code>window</code> object!<br/>
+I checked and it happens in my Safari as well. A bit of googling led us
+to <a href="http://stackoverflow.com/questions/3434278/ie-chrome-are-dom-tree-elements-global-variables-here">the answer at
+StackOverflow</a>:</p>
+
+<blockquote><p>What is supposed to happen is that ‘named elements’ are added as
+apparent properties of the <code>document</code> object. This is a really bad
+idea, as it allows element names to clash with real properties of
+<code>document</code>.</p>
+
+<p>IE made the situation worse by also adding named elements as
+properties of the <code>window</code> object. This is doubly bad in that now you
+have to avoid naming your elements after any member of either the
+<code>document</code> or the <code>window</code> object you (or any other library code in
+your project) might want to use.</p></blockquote>
+
+<p>&#8230;</p>
+
+<blockquote><p>Opera copied IE, then WebKit joined in, and now both the
+previously-unstandardised practice of putting named elements on
+<code>document</code> properties, and the previously-IE-only practice of putting
+them on <code>window</code> are
+<a href="http://dev.w3.org/html5/spec/Overview.html#dom-document-nameditem">being</a>
+<a href="http://dev.w3.org/html5/spec/Overview.html#named-access-on-the-window-object">standardised</a>
+by HTML5, whose approach is to document and standardise every terrible
+practice inflicted on us by browser authors, making them part of the
+web forever. So Firefox 4 will also support this.</p></blockquote>
+
+<p>This is such a funny turn of events. And a great metaphor for how these
+inner decisions are made in browser politics.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[jQuery stacheComb: Loading a Handlebars.js template into the page]]></title>
+    <link href="http://n0nick.github.com/blog/2011/08/28/jquery-stachecomb-loading-a-handlebars-js-template-into-the-page/"/>
+    <updated>2011-08-28T00:00:00+03:00</updated>
+    <id>http://n0nick.github.com/blog/2011/08/28/jquery-stachecomb-loading-a-handlebars-js-template-into-the-page</id>
+    <content type="html"><![CDATA[<p><a href="http://www.handlebarsjs.com/">Handlebars.js</a> is great.</p>
+
+<p>It&#8217;s a superset of the brilliant
+<a href="http://mustache.github.com/">mustache</a> template engine, written
+especially for Javascript and with client-side in mind, and it provides
+a very elegant and organized way for using templates on a rich
+client-side application. If you&#8217;re looking for a template engine, I
+highly recommend looking into it.</p>
+
+<p>I got to know it working on a previous application that I built around
+the uberkool <a href="http://sammyjs.org/">Sammy.js</a> framework. Among all of its
+features, Sammy lets you announce you&#8217;re going to use a template for the
+main element and it would handle the loading and inserting of template
+content into the page.</p>
+
+<p>Now, working on another app that&#8217;s not using Sammy, I needed to get this
+specific functionality, with a touch of improved performance;<br/>
+I needed a plugin that, like Sammy, would make an AJAX request for the
+template file if it doesn&#8217;t have it loaded yet, but additionaly in the
+production environment, I could just add these templates to the main
+markup (i.e. in a build script) and the plugin would use them without
+another request.</p>
+
+<p>This was fairly easy but I thought I&#8217;d share the result: The jQuery
+<strong>stacheComb</strong> plugin.</p>
+
+<div><script src='https://gist.github.com/1176566.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Log in, continue]]></title>
+    <link href="http://n0nick.github.com/blog/2011/08/12/log-in-continue/"/>
+    <updated>2011-08-12T00:00:00+03:00</updated>
+    <id>http://n0nick.github.com/blog/2011/08/12/log-in-continue</id>
+    <content type="html"><![CDATA[<p><strong>Log in sucks.</strong></p>
+
+<p>I hate logging in to stuff.</p>
+
+<p>On my own devices, I always tick &#8216;Remember me&#8217;. I never log out. Why
+should I?</p>
+
+<p>The reasons for logging in are all understandable.<br/>
+ It&#8217;s a solution for many problems.<br/>
+But it&#8217;s a bad solution. <em>Passwords</em> are for safes in banks and
+<em>usernames</em> are just nothings.</p>
+
+<p>When I try to do something and the machine stops me and shouts at me
+<em>Error! You are not logged in! Your authentication failed! You do not
+have permissions for this task!</em>, I feel stupid.<br/>
+ And machines are not supposed to make me feel stupid.</p>
+
+<p>And what more, <strong>logging in absolutely breaks the user experience</strong>.<br/>
+ I get to a blog, I read a post, I read the comments, I like the post, I
+want to let the author know, I click &#8220;like&#8221;.<br/>
+ I get an ERROR MESSAGE. <em>You need to be logged in to do that</em>. Argh.<br/>
+I log in, or sign up, or &#8216;forget my password&#8217; (blerg) and then it takes
+me to the site&#8217;s homepage.<br/>
+ I&#8230; wait, homepage? I didn&#8217;t ask to be on the damn homepage.<br/>
+ I&#8217;ll try to find that post I was reading. I&#8217;ll try the &#8220;Back&#8221; button
+but it&#8217;d fail because of the POST call. I&#8217;ll give up. I&#8217;ll leave.<br/>
+ Are you happy, website?</p>
+
+<p>Logging in and maintaining an <em>account</em> is an experience bug that should
+be fixed.<br/>
+But in the meantime, would websites redirect me back to what I was
+doing?</p>
+
+<p>Thanks.</p>
+
+<p>I was reading <a href="http://blog.stefandeboey.be/copy-bookmarks-from-read-it-later-to-instapap">this post</a> by a guy named Stefan a few minutes ago.<br/>
+ I clicked &#8216;like&#8217; and Posterous asked me to log in. I did, it took me
+more than a minute because I forgot the password for my old account, and
+then I got to a page with this message:</p>
+
+<p><img src="http://s7.postimg.org/6kc6dyd4r/Screen_shot_2011_08_12_at_11_57_28_AM_png_scaled.png" alt="" /></p>
+
+<p> </p>
+
+<p>A perfectly normal turn of events!<br/>
+But &#8216;normal&#8217; is such an outstanding word in the web user experience
+world.</p>
+
+<p>So, kudos to Posterous.<br/>
+A good time to try my years-old &#8220;tech blog&#8221; idea.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Hello]]></title>
+    <link href="http://n0nick.github.com/blog/2011/08/12/hello/"/>
+    <updated>2011-08-12T00:00:00+03:00</updated>
+    <id>http://n0nick.github.com/blog/2011/08/12/hello</id>
+    <content type="html"><![CDATA[<div><script src='https://gist.github.com/1141746.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p><a href="http://en.wikipedia.org/wiki/Brainfuck#Hello_World.21">Yeah</a>.</p>
 ]]></content>
   </entry>
   

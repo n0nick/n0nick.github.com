@@ -1,90 +1,88 @@
 
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
-	<meta charset="utf-8">
-	<title>Baby steps with Pygame sprites (Anchors and positioning done!) - tilde</title>
-	<meta name="author" content="Sagie Maoz">
+  <meta charset="utf-8">
+  <title>Baby steps with Pygame sprites (Anchors and positioning done!) - .n0nickrc</title>
+  <meta name="author" content="Sagie Maoz">
 
-	
-	<meta name="description" content="It has been pretty difficult getting things done in the past week or so, for various reasons (excuses include my birthday, the start of the finals &hellip;">
-	
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="description" content="It has been pretty difficult getting things done in the past week or so, for various reasons (excuses include my birthday, the start of the finals &hellip;">
+  
 
-	<link href="/atom.xml" rel="alternate" title="tilde" type="application/atom+xml">
-	<link rel="canonical" href="">
-	<link href="/favicon.png" rel="shortcut icon">
-	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-	
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://n0nick.github.com/blog/2012/06/24/baby-steps-with-pygame-sprites-anchors-and-po/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+   <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title=".n0nickrc" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34062149-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
 </head>
 
-<body>
-	<header id="header" class="inner"><h1><a href="/">tilde</a></h1>
-<nav id="main-nav"><ul class="main">
-	<li><a href="/">Blog</a></li>
-	<li><a href="/blog/archives">Archives</a></li>
-</ul>
-</nav>
-<nav id="mobile-nav">
-	<div class="alignleft menu">
-		<a class="button">Menu</a>
-		<div class="container"><ul class="main">
-	<li><a href="/">Blog</a></li>
-	<li><a href="/blog/archives">Archives</a></li>
-</ul>
-</div>
-	</div>
-	<div class="alignright search">
-		<a class="button"></a>
-		<div class="container">
-			<form action="http://google.com/search" method="get">
-				<input type="text" name="q" results="0">
-				<input type="hidden" name="q" value="site:n0nick.github.com">
-			</form>
-		</div>
-	</div>
-</nav>
-<nav id="sub-nav" class="alignright">
-	<div class="social">
-		
-		
-		
-		<a class="twitter" href="http://twitter.com/n0nick" title="Twitter">Twitter</a>
-		
-		
-		<a class="github" href="https://github.com/n0nick" title="GitHub">GitHub</a>
-		
-    
-    <a class="pinboard" href="https://pinboard.in/u:n0nick" title="Pinboard">Pinboard</a>
-    
-		
-		
-		
-		
-		
-		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
-		
-	</div>
-	<form class="search" action="http://google.com/search" method="get">
-		<input class="alignright" type="text" name="q" results="0">
-		<input type="hidden" name="q" value="site:n0nick.github.com">
-	</form>
-</nav>
+<body   >
+  <header role="banner"><hgroup>
+</hgroup>
 
 </header>
-	
-		
-	
-	<div id="content" class="inner"><article class="post">
-	<h2 class="title">Baby Steps With Pygame Sprites (Anchors and Positioning Done!)</h2>
-	<div class="entry-content"><p>It has been pretty difficult getting things done in the past week or so, for various reasons (excuses include my birthday, the start of the finals period and some pressure at work).</p><p>Initially I was trying at doing unit tests for my <a href="http://dotfile.n0nick.net/pygame-planned-sprites-work">planned sprites work</a>, in the <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> tradition. This proved to be a major creativity block for me, I&rsquo;m guessing mostly because I&rsquo;m not too experienced with writing tests.<br />So eventually, I decided to take another approach and just get stuff done in a way that could be quickly presented and tweaked.</p><p>Today, I managed to get 2 of the planned features ready to be played around with: <em>Anchor points</em> and <em>Better positioning</em>.  In addition, I have a simple demo app that showcases the use of these 2 features.</p><p><a href="https://github.com/n0nick/pygame-sprites/blob/master/sprite.py">The new <code>Sprite</code> class</a> is based on a flat-out copy-paste of the original Pygame <code>Sprite</code> class, along with the relevant additions:</p><ul><li>An <code>anchor</code> property that will be used for positioning and modifying the sprite. It can be set at any point during the game to either:<ul><li><code>ANCHOR_TOPLEFT</code></li><li><code>ANCHOR_TOPRIGHT</code></li><li><code>ANCHOR_BOTTOMLEFT</code></li><li><code>ANCHOR_BOTTOMRIGHT</code></li><li>A custom <code>(x, y)</code> tuple relative to the sprite&rsquo;s rectangle coordinates.</li></ul></li><li>An <code>anchor_value</code> method that returns a tuple of the calculated value of the sprite&rsquo;s anchor at a given moment.</li><li>A <code>position</code> proprety consisting of <code>(x, y)</code> coordinates that, when set, uses the sprite&rsquo;s anchor property to position the sprite on the screen.</li></ul><p>The usage of the new features is demonstrated in <a href="https://github.com/n0nick/pygame-sprites/blob/master/demos/regions.py">the <code>regions.py</code> demo</a>.<br />The demo starts out with a basic grid in which you can move a basketball sprite around with the arrow keys:<img src="http://f.cl.ly/items/3V3l1a3i381o2f160W2S/Screen%20Shot%202012-06-23%20at%2011.51.01%20PM.png" alt="Demo with TOPLEFT anchor" />During the game, you can use the <code>a</code>, <code>s</code>, <code>d</code> keys to switch between <code>TOPLEFT</code>, <code>CENTER</code> and <code>(25, 20)</code> settings for the anchor, respectively.<img src="http://f.cl.ly/items/2l1N2j1a3S2p1A2I3Y2T/Screen%20Shot%202012-06-23%20at%2011.51.20%20PM.png" alt="Demo with CENTER anchor" /></p><p>This is basically it, for now, but I&rsquo;m pretty satisfied with this small development, as it was integreated easily enough and shouldn&rsquo;t be breaking any legacy uses of the Pygame&rsquo;s <code>Sprite</code> classes.</p><p>The work is maintained in <a href="https://github.com/n0nick/pygame-sprites/">the <code>pygame-sprites</code> repository</a>.<br />Please feel free to check out the code and the demo app and send any relevant feedback my way.</p><p>I hope to be able to show further progress by the next weekend.</p>
-</div>
+  <!-- <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:n0nick.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
 
-
-<div class="meta">
-	<div class="date">
+</nav> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Baby Steps With Pygame Sprites (Anchors and Positioning Done!)</h1>
+    
+    
+      <p class="meta">
+        
 
 
 
@@ -96,58 +94,251 @@
   
 
 
-<time datetime="2012-06-24T00:00:00+03:00" pubdate data-updated="true">Jun 24<span>th</span>, 2012</time></div>
-	<div class="tags">
+<time datetime="2012-06-24T00:00:00+03:00" pubdate data-updated="true">Jun 24<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>It has been pretty difficult getting things done in the past week or so, for various reasons (excuses include my birthday, the start of the finals period and some pressure at work).</p>
+
+<p>Initially I was trying at doing unit tests for my <a href="http://dotfile.n0nick.net/pygame-planned-sprites-work">planned sprites work</a>, in the <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> tradition. This proved to be a major creativity block for me, I&#8217;m guessing mostly because I&#8217;m not too experienced with writing tests.<br/>
+So eventually, I decided to take another approach and just get stuff done in a way that could be quickly presented and tweaked.</p>
+
+<p>Today, I managed to get 2 of the planned features ready to be played around with: <em>Anchor points</em> and <em>Better positioning</em>.  In addition, I have a simple demo app that showcases the use of these 2 features.</p>
+
+<p><a href="https://github.com/n0nick/pygame-sprites/blob/master/sprite.py">The new <code>Sprite</code> class</a> is based on a flat-out copy-paste of the original Pygame <code>Sprite</code> class, along with the relevant additions:</p>
+
+<ul>
+<li>An <code>anchor</code> property that will be used for positioning and modifying the sprite. It can be set at any point during the game to either:
+
+<ul>
+<li><code>ANCHOR_TOPLEFT</code></li>
+<li><code>ANCHOR_TOPRIGHT</code></li>
+<li><code>ANCHOR_BOTTOMLEFT</code></li>
+<li><code>ANCHOR_BOTTOMRIGHT</code></li>
+<li>A custom <code>(x, y)</code> tuple relative to the sprite&#8217;s rectangle coordinates.</li>
+</ul>
+</li>
+<li>An <code>anchor_value</code> method that returns a tuple of the calculated value of the sprite&#8217;s anchor at a given moment.</li>
+<li>A <code>position</code> proprety consisting of <code>(x, y)</code> coordinates that, when set, uses the sprite&#8217;s anchor property to position the sprite on the screen.</li>
+</ul>
+
+
+<p>The usage of the new features is demonstrated in <a href="https://github.com/n0nick/pygame-sprites/blob/master/demos/regions.py">the <code>regions.py</code> demo</a>.<br/>
+The demo starts out with a basic grid in which you can move a basketball sprite around with the arrow keys:
+<img src="http://f.cl.ly/items/3V3l1a3i381o2f160W2S/Screen%20Shot%202012-06-23%20at%2011.51.01%20PM.png" alt="Demo with TOPLEFT anchor" />
+During the game, you can use the <code>a</code>, <code>s</code>, <code>d</code> keys to switch between <code>TOPLEFT</code>, <code>CENTER</code> and <code>(25, 20)</code> settings for the anchor, respectively.
+<img src="http://f.cl.ly/items/2l1N2j1a3S2p1A2I3Y2T/Screen%20Shot%202012-06-23%20at%2011.51.20%20PM.png" alt="Demo with CENTER anchor" /></p>
+
+<p>This is basically it, for now, but I&#8217;m pretty satisfied with this small development, as it was integreated easily enough and shouldn&#8217;t be breaking any legacy uses of the Pygame&#8217;s <code>Sprite</code> classes.</p>
+
+<p>The work is maintained in <a href="https://github.com/n0nick/pygame-sprites/">the <code>pygame-sprites</code> repository</a>.<br/>
+Please feel free to check out the code and the demo app and send any relevant feedback my way.</p>
+
+<p>I hope to be able to show further progress by the next weekend.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Sagie Maoz</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-24T00:00:00+03:00" pubdate data-updated="true">Jun 24<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://n0nick.github.com/blog/2012/06/24/baby-steps-with-pygame-sprites-anchors-and-po/" data-via="n0nick" data-counturl="http://n0nick.github.com/blog/2012/06/24/baby-steps-with-pygame-sprites-anchors-and-po/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/06/14/pygame-planned-sprites-work/" title="Previous Post: Pygame: Planned sprites work">&laquo; Pygame: Planned sprites work</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/07/11/its-midterms-time-already/" title="Next Post: It's midterms time (already?!)">It's midterms time (already?!) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
 
 </div>
-	
-</div></article>
 
-	<div class="share">
-	<div class="addthis_toolbox addthis_default_style ">
-	
-	<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
-	
-	
-	<a class="addthis_button_tweet"></a>
-	
-	
-	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
-	
-	<a class="addthis_counter addthis_pill_style"></a>
-	</div>
-  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
-</div>
+<aside class="sidebar">
+  
+    <section>
+  <ul id="recent_posts">
+      <li class="post">
+      <a href="http://n0nick.github.com" alt="Home"><img src="/images/Home.png"></a>
+      <a href="http://n0nick.github.com/archives/" alt="Archives"><img src="/images/Calendar.png"></a>
+      <a href="mailto:" alt="E-Mail"><img src="/images/Envelope.png"></a>
+      <a href="http://n0nick.github.com/atom.xml" alt="subscribe feed"><img src="/images/rss_big.png"></a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/11/its-midterms-time-already/">It's midterms time (already?!)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/24/baby-steps-with-pygame-sprites-anchors-and-po/">Baby steps with Pygame sprites (Anchors and positioning done!)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/14/pygame-planned-sprites-work/">Pygame: Planned sprites work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/04/gsoc-journal-weeks-1-2/">GSoC Journal: Weeks 1-2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/03/quick-dirty-using-pygames-dirtysprite-layered/">Quick & Dirty: Using Pygame's DirtySprite & LayeredDirty (A tutorial)</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/n0nick">@n0nick</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'n0nick',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
 
 
-</div>
-	<footer id="footer" class="inner">Copyright &copy; 2013
+<section>
+  <h1>My Pinboard</h1>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
+  <p><a href="http://pinboard.in/u:n0nick">My Pinboard Bookmarks &raquo;</a></p>
+</section>
+<script type="text/javascript">
+  var linkroll = 'pinboard_linkroll'; //id target for pinboard list
+  var pinboard_user = "n0nick"; //id target for pinboard list
+  var pinboard_count = 3; //id target for pinboard list
+  (function(){
+    var pinboardInit = document.createElement('script');
+    pinboardInit.type = 'text/javascript';
+    pinboardInit.async = true;
+    pinboardInit.src = '/javascripts/pinboard.js';
+    document.getElementsByTagName('head')[0].appendChild(pinboardInit);
+  })();
+</script>
 
-    Sagie Maoz
+
+<section class="googleplus googleplus-hidden">
+  <h1>
+    <a href="https://plus.google.com/111958039384496273736?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Sagie Maoz -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
 
 </footer>
-	<script src="/javascripts/slash.js"></script>
-<script src="/javascripts/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-	$('.fancybox').fancybox();
-})(jQuery);
-</script> <!-- Delete or comment this line to disable Fancybox -->
+  
 
 
 
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 
-	<script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-34062149-1']);
-		_gaq.push(['_trackPageview']);
 
-		(function() {
-			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
-	</script>
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
 
 
 
