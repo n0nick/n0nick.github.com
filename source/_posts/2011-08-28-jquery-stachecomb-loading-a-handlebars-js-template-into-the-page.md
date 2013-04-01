@@ -40,4 +40,4 @@ another request.
 This was fairly easy but I thought I'd share the result: The jQuery
 **stacheComb** plugin.
 
-https://gist.github.com/1176566
+{% gist 1176566 %}

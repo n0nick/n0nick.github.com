@@ -27,7 +27,7 @@ the new [jQuery Deferred
 objects](http://api.jquery.com/category/deferred-object/).  
 I added this line to a function that wraps AJAX calls:
 
-https://gist.github.com/1194488
+{% gist 1194488 %}
 
 And it worked like magic.
 
@@ -40,4 +40,4 @@ Cool!
 
 You use it like this:
 
-https://gist.github.com/1194515
+{% gist 1194515 %}
