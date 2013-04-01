@@ -24,7 +24,7 @@ and over again to understand why something that worked a few minutes ago
 anymore.
 
 The thing is, it's usually somebody's fault. And that person should be
-educated.\
+educated.
 Instead of straightforward educating, we decided to go with humiliating.
 Much more fun this way.
 
@@ -36,7 +36,6 @@ move the jar to your desk, so everyone beholds your pushbaggery.
 
 <iframe width="500" height="417" src="http://www.youtube.com/embed/oIrFhZe_dD4" frameborder="0" allowfullscreen></iframe>
 
-You can see our rules list [on this
-page](http://n0nick.github.com/pushbag/).  
+You can see our rules list [on this page](http://n0nick.github.com/pushbag/).  
 We haven't decided on what to do with the collected taxes yet, but I'll
 let you know if it's something funny. 
