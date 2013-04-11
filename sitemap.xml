@@ -2,77 +2,81 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://n0nick.github.com/blog/2011/08/12/hello/</loc>
-        <lastmod>2013-04-01T16:00:26+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/blog/2011/08/12/log-in-continue/</loc>
-        <lastmod>2013-04-01T16:32:56+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>
             http://n0nick.github.com/blog/2011/08/28/jquery-stachecomb-loading-a-handlebars-js-template-into-the-page/
         </loc>
-        <lastmod>2013-04-01T16:00:26+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>
             http://n0nick.github.com/blog/2011/08/30/classic-browser-politics-are-dom-elements-global-variables/
         </loc>
-        <lastmod>2013-04-01T16:00:26+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/blog/2011/09/05/slowing-down-jquery/</loc>
-        <lastmod>2013-04-01T16:00:26+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>
             http://n0nick.github.com/blog/2012/04/13/google-summer-of-code-2012-applying-for-pygam/
         </loc>
-        <lastmod>2013-04-01T16:00:26+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/blog/2012/04/23/summer-plans-pygame-gsoc-project/</loc>
-        <lastmod>2013-04-01T16:23:00+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/blog/2012/05/15/introducing-the-pushbag-jar/</loc>
-        <lastmod>2013-04-01T16:19:52+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>
             http://n0nick.github.com/blog/2012/06/03/quick-dirty-using-pygames-dirtysprite-layered/
         </loc>
-        <lastmod>2013-04-01T16:00:26+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/blog/2012/06/04/gsoc-journal-weeks-1-2/</loc>
-        <lastmod>2013-04-01T16:00:26+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/blog/2012/06/14/pygame-planned-sprites-work/</loc>
-        <lastmod>2013-04-01T16:00:26+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>
             http://n0nick.github.com/blog/2012/06/24/baby-steps-with-pygame-sprites-anchors-and-po/
         </loc>
-        <lastmod>2013-04-01T16:00:26+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/blog/2012/07/11/its-midterms-time-already/</loc>
-        <lastmod>2013-04-01T16:00:26+03:00</lastmod>
+        <lastmod>2013-04-01T16:38:53+03:00</lastmod>
+    </url>
+    <url>
+        <loc>http://n0nick.github.com/blog/2013/04/11/another-fresh-start/</loc>
+        <lastmod>2013-04-11T15:40:19+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/archives/</loc>
-        <lastmod>2013-04-01T16:32:56+03:00</lastmod>
+        <lastmod>2013-04-11T15:40:19+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/blog/archives/</loc>
-        <lastmod>2013-04-01T16:32:56+03:00</lastmod>
+        <lastmod>2013-04-11T15:40:19+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/</loc>
-        <lastmod>2013-04-01T16:32:56+03:00</lastmod>
+        <lastmod>2013-04-11T15:40:19+03:00</lastmod>
     </url>
     <url>
         <loc>http://n0nick.github.com/robots.txt</loc>

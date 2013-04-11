@@ -9,9 +9,8 @@
   <meta name="author" content="Sagie Maoz">
 
   
-  <meta name="description" content="Handlebars.js is great. It&#8217;s a superset of the brilliant
-mustache template engine, written
-especially for Javascript and with client-side in &hellip;">
+  <meta name="description" content="This is hilarious: A co-worker noticed something strange happening in his Chrome browser:
+Every element in an HTML page that has an id attribute gets &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +76,75 @@ especially for Javascript and with client-side in &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/08/30/classic-browser-politics-are-dom-elements-global-variables/">Classic Browser Politics: Are DOM Elements Global Variables?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-30T00:00:00+03:00" pubdate data-updated="true">Aug 30<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is hilarious:</p>
+
+<p>A co-worker noticed something strange happening in his Chrome browser:
+Every element in an HTML page that has an <code>id</code> attribute gets attached
+as a member of the global <code>window</code> object!<br/>
+I checked and it happens in my Safari as well. A bit of googling led us
+to <a href="http://stackoverflow.com/questions/3434278/ie-chrome-are-dom-tree-elements-global-variables-here">the answer at
+StackOverflow</a>:</p>
+
+<blockquote><p>What is supposed to happen is that ‘named elements’ are added as
+apparent properties of the <code>document</code> object. This is a really bad
+idea, as it allows element names to clash with real properties of
+<code>document</code>.</p>
+
+<p>IE made the situation worse by also adding named elements as
+properties of the <code>window</code> object. This is doubly bad in that now you
+have to avoid naming your elements after any member of either the
+<code>document</code> or the <code>window</code> object you (or any other library code in
+your project) might want to use.</p></blockquote>
+
+<p>&#8230;</p>
+
+<blockquote><p>Opera copied IE, then WebKit joined in, and now both the
+previously-unstandardised practice of putting named elements on
+<code>document</code> properties, and the previously-IE-only practice of putting
+them on <code>window</code> are
+<a href="http://dev.w3.org/html5/spec/Overview.html#dom-document-nameditem">being</a>
+<a href="http://dev.w3.org/html5/spec/Overview.html#named-access-on-the-window-object">standardised</a>
+by HTML5, whose approach is to document and standardise every terrible
+practice inflicted on us by browser authors, making them part of the
+web forever. So Firefox 4 will also support this.</p></blockquote>
+
+<p>This is such a funny turn of events. And a great metaphor for how these
+inner decisions are made in browser politics.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -294,6 +362,10 @@ A good time to try my years-old &#8220;tech blog&#8221; idea.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/04/11/another-fresh-start/">(Another) Fresh Start</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/07/11/its-midterms-time-already/">It&#8217;s midterms time (already?!)</a>
       </li>
     
@@ -307,10 +379,6 @@ A good time to try my years-old &#8220;tech blog&#8221; idea.</p>
     
       <li class="post">
         <a href="/blog/2012/06/04/gsoc-journal-weeks-1-2/">GSoC Journal: Weeks 1-2</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/06/03/quick-dirty-using-pygames-dirtysprite-layered/">Quick & Dirty: Using Pygame&#8217;s DirtySprite & LayeredDirty (A tutorial)</a>
       </li>
     
   </ul>
